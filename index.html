@@ -860,11 +860,15 @@ document.getElementById('login-btn').addEventListener('click', async () => {
         
         // === ЗАГРУЗКА ВЫПЛАТ ===
         async function loadPayments(userId) {
-            const snapshot = await db.collection('payments')
-                .where('userId', '==', userId)
-                .orderBy('createdAt', 'desc')
-                .limit(10)
-                .get();
+          const snapshot = await db.collection('payments')
+    .where('userId', '==', userId)
+    .limit(10)
+    .get();
+    
+// Сортировка на клиенте
+const payments = [];
+snapshot.forEach(doc => payments.push({ id: doc.id, ...doc.data() }));
+payments.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
             
             const container = document.getElementById('payments-history');
             if (snapshot.empty) {

@@ -154,7 +154,7 @@
         <section id="welcome-section" class="container">
             <h1><i class="fas fa-calendar-check"></i> Система планирования смен</h1>
             <p>Администраторы назначают смены, сотрудники просматривают свои графики работы.</p>
-            <button id="go-to-login" onclick="app.showSection('login')"><i class="fas fa-sign-in-alt"></i> Вход в систему</button>
+            <button id="go-to-login" onclick="app.showSection('login-section')"><i class="fas fa-sign-in-alt"></i> Вход в систему</button>
         </section>
 
         <!-- LOGIN SECTION -->
@@ -426,7 +426,29 @@
                 return el;
             },
             
-           
+            showSection: function(sectionId) {
+                // Корректируем ID если передали короткий вариант
+                const idMap = {
+                    'welcome': 'welcome-section',
+                    'login': 'login-section', 
+                    'admin': 'admin-section',
+                    'user': 'user-section'
+                };
+                
+                const fullId = idMap[sectionId] || sectionId;
+                
+                const sections = ['welcome-section', 'login-section', 'admin-section', 'user-section'];
+                sections.forEach(id => {
+                    const el = this.getElement(id);
+                    if (el) el.classList.add('hidden');
+                });
+                
+                const targetSection = this.getElement(fullId);
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                }
+                this.updateNavigation();
+            },
             
             updateNavigation: function() {
                 const isLoggedIn = !!currentUser;
@@ -1174,19 +1196,19 @@
             // Навигация
             app.safeAddEventListener('nav-home', 'click', (e) => {
                 e.preventDefault();
-                app.showSection('welcome');
+                app.showSection('welcome-section');
             });
             app.safeAddEventListener('nav-login', 'click', (e) => {
                 e.preventDefault();
-                app.showSection('login');
+                app.showSection('login-section');
             });
             app.safeAddEventListener('nav-admin', 'click', (e) => {
                 e.preventDefault();
-                app.showSection('admin');
+                app.showSection('admin-section');
             });
             app.safeAddEventListener('nav-user', 'click', (e) => {
                 e.preventDefault();
-                app.showSection('user');
+                app.showSection('user-section');
             });
             app.safeAddEventListener('nav-logout', 'click', () => {
                 auth.signOut();
@@ -1195,7 +1217,7 @@
             // Кнопка "Вход в систему" на главной
             app.safeAddEventListener('go-to-login', 'click', (e) => {
                 e.preventDefault();
-                app.showSection('login');
+                app.showSection('login-section');
             });
             
             // Управление календарем
@@ -1221,7 +1243,7 @@
             if (periodTo) periodTo.valueAsDate = today;
             
             // Начальная секция
-            app.showSection('welcome');
+            app.showSection('welcome-section');
         }
         
         // === ОБРАБОТЧИК АУТЕНТИФИКАЦИИ ===
@@ -1235,18 +1257,18 @@
                 const isAdmin = userDoc.exists && userDoc.data().role === 'admin';
                 
                 if (isAdmin) {
-                    app.showSection('admin');
+                    app.showSection('admin-section');
                 } else {
                     await loadShiftsForUser(user.uid);
                     updateUserStats();
                     renderUserCalendar();
                     loadPaymentHistory(user.uid);
-                    app.showSection('user');
+                    app.showSection('user-section');
                 }
                 
                 app.updateNavigation();
             } else {
-                app.showSection('welcome');
+                app.showSection('welcome-section');
                 app.updateNavigation();
             }
         });

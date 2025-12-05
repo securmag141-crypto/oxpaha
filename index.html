@@ -154,7 +154,7 @@
         <section id="welcome-section" class="container">
             <h1><i class="fas fa-calendar-check"></i> Система планирования смен</h1>
             <p>Администраторы назначают смены, сотрудники просматривают свои графики работы.</p>
-            <button id="go-to-login" onclick="showSection('login')"><i class="fas fa-sign-in-alt"></i> Вход в систему</button>
+            <button id="go-to-login" onclick="app.showSection('login')"><i class="fas fa-sign-in-alt"></i> Вход в систему</button>
         </section>
 
         <!-- LOGIN SECTION -->
@@ -418,6 +418,61 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         
+        // === БЕЗОПАСНЫЕ УТИЛИТЫ ===
+        const app = {
+            getElement: function(id) {
+                const el = document.getElementById(id);
+                if (!el && console) console.warn('Элемент не найден:', id);
+                return el;
+            },
+            
+            showSection: function(sectionId) {
+                const sections = ['welcome-section', 'login-section', 'admin-section', 'user-section'];
+                sections.forEach(id => {
+                    const el = this.getElement(id);
+                    if (el) el.classList.add('hidden');
+                });
+                
+                const targetSection = this.getElement(sectionId);
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                }
+                this.updateNavigation();
+            },
+            
+            updateNavigation: function() {
+                const isLoggedIn = !!currentUser;
+                const isAdmin = currentUser && allUsers.find(u => u.id === currentUser.uid && u.role === 'admin');
+                
+                const navHome = this.getElement('nav-home');
+                const navLogin = this.getElement('nav-login');
+                const navAdmin = this.getElement('nav-admin');
+                const navUser = this.getElement('nav-user');
+                const navLogout = this.getElement('nav-logout');
+                
+                if (navHome) navHome.classList.toggle('hidden', isLoggedIn && !isAdmin);
+                if (navLogin) navLogin.classList.toggle('hidden', isLoggedIn);
+                if (navAdmin) navAdmin.classList.toggle('hidden', !isAdmin);
+                if (navUser) navUser.classList.toggle('hidden', !isLoggedIn);
+                if (navLogout) navLogout.classList.toggle('hidden', !isLoggedIn);
+            },
+            
+            safeAddEventListener: function(id, event, handler) {
+                const el = this.getElement(id);
+                if (el) el.addEventListener(event, handler);
+            },
+            
+            showMessage: function(elementId, text, isError = false) {
+                const el = this.getElement(elementId);
+                if (el) {
+                    el.textContent = text;
+                    el.className = `message ${isError ? 'error' : 'success'}`;
+                    el.classList.remove('hidden');
+                    setTimeout(() => el.classList.add('hidden'), 5000);
+                }
+            }
+        };
+        
         // === СОСТОЯНИЕ ===
         let currentUser = null;
         let allUsers = [];
@@ -425,27 +480,6 @@
         let currentYear = new Date().getFullYear();
         let selectedUserId = '';
         let shiftsMap = {};
-        
-        // === ПОКАЗАТЬ/СКРЫТЬ СЕКЦИИ ===
-        function showSection(sectionId) {
-            document.getElementById('welcome-section').classList.add('hidden');
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('admin-section').classList.add('hidden');
-            document.getElementById('user-section').classList.add('hidden');
-            document.getElementById(sectionId).classList.remove('hidden');
-            updateNavigation();
-        }
-        
-        function updateNavigation() {
-            const isLoggedIn = !!currentUser;
-            const isAdmin = currentUser && allUsers.find(u => u.id === currentUser.uid && u.role === 'admin');
-            
-            document.getElementById('nav-home').classList.toggle('hidden', isLoggedIn && !isAdmin);
-            document.getElementById('nav-login').classList.toggle('hidden', isLoggedIn);
-            document.getElementById('nav-admin').classList.toggle('hidden', !isAdmin);
-            document.getElementById('nav-user').classList.toggle('hidden', !isLoggedIn);
-            document.getElementById('nav-logout').classList.toggle('hidden', !isLoggedIn);
-        }
         
         // === ТАБЫ ===
         function initTabs() {
@@ -459,15 +493,21 @@
                     
                     // Добавить активный класс текущему табу
                     this.classList.add('active');
-                    document.getElementById(`tab-${tabId}`).classList.add('active');
+                    const content = document.getElementById(`tab-${tabId}`);
+                    if (content) content.classList.add('active');
                 });
             });
         }
         
         // === АУТЕНТИФИКАЦИЯ ===
-        document.getElementById('login-btn').addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+        app.safeAddEventListener('login-btn', 'click', async () => {
+            const emailInput = app.getElement('login-email');
+            const passwordInput = app.getElement('login-password');
+            
+            if (!emailInput || !passwordInput) return;
+            
+            const email = emailInput.value;
+            const password = passwordInput.value;
             
             if (!email || !password) {
                 alert('Введите email и пароль');
@@ -483,51 +523,76 @@
         
         // === ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ ===
         async function loadUsers() {
-            const snapshot = await db.collection('users').get();
-            allUsers = [];
-            snapshot.forEach(doc => allUsers.push({ id: doc.id, ...doc.data() }));
-            
-            // Показ списка пользователей
-            const container = document.getElementById('users-container');
-            container.innerHTML = allUsers.map(user => `
-                <div class="user-card ${user.role === 'admin' ? 'admin' : ''}">
-                    <strong>${user.fullName || user.email}</strong><br>
-                    <small>${user.role === 'admin' ? 'Администратор' : 'Сотрудник'}</small><br>
-                    <small>Ставка: ${user.rate || 0} ₽</small>
-                </div>
-            `).join('');
-            
-            // Селект выбора пользователя
-            const select = document.getElementById('selected-user');
-            const paymentSelect = document.getElementById('payment-user');
-            select.innerHTML = '<option value="">Выберите сотрудника</option>';
-            paymentSelect.innerHTML = '<option value="">Выберите сотрудника</option>';
-            
-            allUsers.forEach(user => {
-                if (user.role !== 'admin') {
-                    const option = document.createElement('option');
-                    option.value = user.id;
-                    option.textContent = `${user.fullName || user.email} (${user.rate || 0} ₽)`;
-                    select.appendChild(option.cloneNode(true));
-                    paymentSelect.appendChild(option);
+            try {
+                const snapshot = await db.collection('users').get();
+                allUsers = [];
+                snapshot.forEach(doc => allUsers.push({ id: doc.id, ...doc.data() }));
+                
+                // Показ списка пользователей
+                const container = app.getElement('users-container');
+                if (container) {
+                    container.innerHTML = allUsers.map(user => `
+                        <div class="user-card ${user.role === 'admin' ? 'admin' : ''}">
+                            <strong>${user.fullName || user.email}</strong><br>
+                            <small>${user.role === 'admin' ? 'Администратор' : 'Сотрудник'}</small><br>
+                            <small>Ставка: ${user.rate || 0} ₽</small>
+                        </div>
+                    `).join('');
                 }
-            });
-            
-            select.addEventListener('change', function() {
-                selectedUserId = this.value;
-                if (selectedUserId) {
-                    loadShiftsForUser(selectedUserId);
-                    renderAdminCalendar();
+                
+                // Селект выбора пользователя
+                const select = app.getElement('selected-user');
+                const paymentSelect = app.getElement('payment-user');
+                
+                if (select) {
+                    select.innerHTML = '<option value="">Выберите сотрудника</option>';
+                    allUsers.forEach(user => {
+                        if (user.role !== 'admin') {
+                            const option = document.createElement('option');
+                            option.value = user.id;
+                            option.textContent = `${user.fullName || user.email} (${user.rate || 0} ₽)`;
+                            select.appendChild(option);
+                        }
+                    });
+                    
+                    select.addEventListener('change', function() {
+                        selectedUserId = this.value;
+                        if (selectedUserId) {
+                            loadShiftsForUser(selectedUserId);
+                            renderAdminCalendar();
+                        }
+                    });
                 }
-            });
+                
+                if (paymentSelect) {
+                    paymentSelect.innerHTML = '<option value="">Выберите сотрудника</option>';
+                    allUsers.forEach(user => {
+                        if (user.role !== 'admin') {
+                            const option = document.createElement('option');
+                            option.value = user.id;
+                            option.textContent = `${user.fullName || user.email} (${user.rate || 0} ₽)`;
+                            paymentSelect.appendChild(option);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки пользователей:', error);
+            }
         }
         
         // === СОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ ===
-        document.getElementById('create-user-btn').addEventListener('click', async () => {
-            const email = document.getElementById('new-user-email').value;
-            const password = document.getElementById('new-user-password').value;
-            const fullName = document.getElementById('new-user-name').value;
-            const rate = parseInt(document.getElementById('new-user-rate').value) || 1500;
+        app.safeAddEventListener('create-user-btn', 'click', async () => {
+            const emailInput = app.getElement('new-user-email');
+            const passwordInput = app.getElement('new-user-password');
+            const nameInput = app.getElement('new-user-name');
+            const rateInput = app.getElement('new-user-rate');
+            
+            if (!emailInput || !passwordInput || !nameInput || !rateInput) return;
+            
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            const fullName = nameInput.value;
+            const rate = parseInt(rateInput.value) || 1500;
             
             if (!email || !password || !fullName) {
                 alert('Заполните все поля');
@@ -545,9 +610,9 @@
                 });
                 
                 // Очистка полей
-                document.getElementById('new-user-email').value = '';
-                document.getElementById('new-user-password').value = '';
-                document.getElementById('new-user-name').value = '';
+                emailInput.value = '';
+                passwordInput.value = '';
+                nameInput.value = '';
                 
                 loadUsers();
                 alert(`Сотрудник ${fullName} создан!`);
@@ -558,28 +623,36 @@
         
         // === РАБОТА СО СМЕНАМИ ===
         async function loadShiftsForUser(userId) {
-            const snapshot = await db.collection('shifts')
-                .where('userId', '==', userId)
-                .get();
-            
-            shiftsMap[userId] = {};
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                shiftsMap[userId][data.date] = {
-                    type: data.type,
-                    done: data.done || false,
-                    paid: data.paid || false
-                };
-            });
+            try {
+                const snapshot = await db.collection('shifts')
+                    .where('userId', '==', userId)
+                    .get();
+                
+                shiftsMap[userId] = {};
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    shiftsMap[userId][data.date] = {
+                        type: data.type,
+                        done: data.done || false,
+                        paid: data.paid || false
+                    };
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки смен:', error);
+            }
         }
         
         // === РЕНДЕР КАЛЕНДАРЯ АДМИНА ===
         function renderAdminCalendar() {
-            if (!selectedUserId) return;
+            const container = app.getElement('admin-calendar');
+            if (!container || !selectedUserId) return;
             
-            const container = document.getElementById('admin-calendar');
-            const year = parseInt(document.getElementById('selected-year').value);
-            const month = parseInt(document.getElementById('selected-month').value);
+            const yearInput = app.getElement('selected-year');
+            const monthSelect = app.getElement('selected-month');
+            if (!yearInput || !monthSelect) return;
+            
+            const year = parseInt(yearInput.value) || 2024;
+            const month = parseInt(monthSelect.value) || 0;
             
             // Заголовки дней
             const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
@@ -651,9 +724,11 @@
                     }
                     
                     const date = this.getAttribute('data-date');
-                    if (!date) return; // пустая клетка
+                    if (!date) return;
                     
                     const marker = this.querySelector('.shift-marker');
+                    if (!marker) return;
+                    
                     const currentType = marker.getAttribute('data-shift-type');
                     const isDone = marker.getAttribute('data-done') === 'true';
                     const isPaid = marker.getAttribute('data-paid') === 'true';
@@ -726,15 +801,19 @@
         }
         
         // === СОХРАНЕНИЕ СМЕН ===
-        document.getElementById('save-shifts-btn').addEventListener('click', async () => {
+        app.safeAddEventListener('save-shifts-btn', 'click', async () => {
             if (!selectedUserId) {
                 alert('Выберите сотрудника');
                 return;
             }
             
             try {
-                const year = parseInt(document.getElementById('selected-year').value);
-                const month = parseInt(document.getElementById('selected-month').value);
+                const yearInput = app.getElement('selected-year');
+                const monthSelect = app.getElement('selected-month');
+                if (!yearInput || !monthSelect) return;
+                
+                const year = parseInt(yearInput.value) || 2024;
+                const month = parseInt(monthSelect.value) || 0;
                 const monthStr = String(month + 1).padStart(2, '0');
                 
                 // Удаляем старые смены за этот месяц
@@ -778,9 +857,9 @@
         
         // === КАЛЕНДАРЬ ПОЛЬЗОВАТЕЛЯ ===
         function renderUserCalendar() {
-            if (!currentUser) return;
+            const container = app.getElement('user-calendar');
+            if (!container || !currentUser) return;
             
-            const container = document.getElementById('user-calendar');
             const today = new Date();
             const year = today.getFullYear();
             const month = today.getMonth();
@@ -879,56 +958,77 @@
             });
             
             // Обновляем статистику
-            document.getElementById('stat-regular').textContent = regularCount;
-            document.getElementById('stat-extra').textContent = extraCount;
-            document.getElementById('stat-pending').textContent = `${pendingAmount} ₽`;
-            document.getElementById('stat-paid').textContent = `${paidAmount} ₽`;
+            const statRegular = app.getElement('stat-regular');
+            const statExtra = app.getElement('stat-extra');
+            const statPending = app.getElement('stat-pending');
+            const statPaid = app.getElement('stat-paid');
+            
+            if (statRegular) statRegular.textContent = regularCount;
+            if (statExtra) statExtra.textContent = extraCount;
+            if (statPending) statPending.textContent = `${pendingAmount} ₽`;
+            if (statPaid) statPaid.textContent = `${paidAmount} ₽`;
             
             // Обновляем ожидаемые выплаты
-            const pendingTable = document.getElementById('pending-payments');
-            const pendingTotal = document.getElementById('pending-total');
+            const pendingTable = app.getElement('pending-payments');
+            const pendingTotal = app.getElement('pending-total');
             
-            if (regularCount === 0 && extraCount === 0) {
-                pendingTable.innerHTML = '<tr><td colspan="4">Нет ожидающих выплат</td></tr>';
-            } else {
-                pendingTable.innerHTML = '';
-                if (regularCount > 0) {
-                    pendingTable.innerHTML += `
-                        <tr>
-                            <td>Обычные смены</td>
-                            <td>${regularCount}</td>
-                            <td>${rate} ₽</td>
-                            <td>${regularCount * rate} ₽</td>
-                        </tr>
-                    `;
-                }
-                if (extraCount > 0) {
-                    pendingTable.innerHTML += `
-                        <tr>
-                            <td>Подработки</td>
-                            <td>${extraCount}</td>
-                            <td>${rate + 100} ₽</td>
-                            <td>${extraCount * (rate + 100)} ₽</td>
-                        </tr>
-                    `;
+            if (pendingTable) {
+                if (regularCount === 0 && extraCount === 0) {
+                    pendingTable.innerHTML = '<tr><td colspan="4">Нет ожидающих выплат</td></tr>';
+                } else {
+                    pendingTable.innerHTML = '';
+                    if (regularCount > 0) {
+                        pendingTable.innerHTML += `
+                            <tr>
+                                <td>Обычные смены</td>
+                                <td>${regularCount}</td>
+                                <td>${rate} ₽</td>
+                                <td>${regularCount * rate} ₽</td>
+                            </tr>
+                        `;
+                    }
+                    if (extraCount > 0) {
+                        pendingTable.innerHTML += `
+                            <tr>
+                                <td>Подработки</td>
+                                <td>${extraCount}</td>
+                                <td>${rate + 100} ₽</td>
+                                <td>${extraCount * (rate + 100)} ₽</td>
+                            </tr>
+                        `;
+                    }
                 }
             }
-            pendingTotal.textContent = `${pendingAmount} ₽`;
+            
+            if (pendingTotal) pendingTotal.textContent = `${pendingAmount} ₽`;
             
             // Данные пользователя
-            document.getElementById('user-full-name').textContent = user.fullName || 'Имя не указано';
-            document.getElementById('user-position').textContent = user.role === 'admin' ? 'Администратор' : 'Сотрудник';
-            document.getElementById('user-rate').textContent = `${rate} ₽`;
-            document.getElementById('user-email').textContent = user.email;
+            const userName = app.getElement('user-full-name');
+            const userPosition = app.getElement('user-position');
+            const userRate = app.getElement('user-rate');
+            const userEmail = app.getElement('user-email');
+            
+            if (userName) userName.textContent = user.fullName || 'Имя не указано';
+            if (userPosition) userPosition.textContent = user.role === 'admin' ? 'Администратор' : 'Сотрудник';
+            if (userRate) userRate.textContent = `${rate} ₽`;
+            if (userEmail) userEmail.textContent = user.email;
         }
         
         // === РАСЧЕТ ВЫПЛАТ ===
-        document.getElementById('calculate-payment-btn').addEventListener('click', async () => {
-            const userId = document.getElementById('payment-user').value;
-            const fromDate = document.getElementById('period-from').value;
-            const toDate = document.getElementById('period-to').value;
-            const bonusAmount = parseInt(document.getElementById('bonus-amount').value) || 0;
-            const bonusNote = document.getElementById('bonus-note').value;
+        app.safeAddEventListener('calculate-payment-btn', 'click', async () => {
+            const paymentUser = app.getElement('payment-user');
+            const periodFrom = app.getElement('period-from');
+            const periodTo = app.getElement('period-to');
+            const bonusAmount = app.getElement('bonus-amount');
+            const bonusNote = app.getElement('bonus-note');
+            
+            if (!paymentUser || !periodFrom || !periodTo || !bonusAmount || !bonusNote) return;
+            
+            const userId = paymentUser.value;
+            const fromDate = periodFrom.value;
+            const toDate = periodTo.value;
+            const bonus = parseInt(bonusAmount.value) || 0;
+            const note = bonusNote.value;
             
             if (!userId || !fromDate || !toDate) {
                 alert('Заполните все поля');
@@ -979,7 +1079,7 @@
                 }
                 
                 // Добавляем премию/удержание
-                const finalAmount = totalAmount + bonusAmount;
+                const finalAmount = totalAmount + bonus;
                 
                 // Создаём запись о выплате
                 const paymentRef = db.collection('salary_payments').doc();
@@ -991,8 +1091,8 @@
                     regularShifts: regularCount,
                     extraShifts: extraCount,
                     baseAmount: totalAmount,
-                    bonus: bonusAmount,
-                    bonusNote: bonusNote,
+                    bonus: bonus,
+                    bonusNote: note,
                     totalAmount: finalAmount,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     adminId: currentUser.uid
@@ -1012,20 +1112,23 @@
                 }
                 
                 // Очищаем поля
-                document.getElementById('bonus-amount').value = '';
-                document.getElementById('bonus-note').value = '';
+                bonusAmount.value = '';
+                bonusNote.value = '';
                 
-                document.getElementById('calculation-result').innerHTML = `
-                    <div class="success">
-                        <strong>Выплата создана!</strong><br>
-                        Сотрудник: ${user.fullName || user.email}<br>
-                        Период: ${fromDate} - ${toDate}<br>
-                        Обычных: ${regularCount} × ${rate} ₽ = ${regularCount * rate} ₽<br>
-                        Подработок: ${extraCount} × ${rate + 100} ₽ = ${extraCount * (rate + 100)} ₽<br>
-                        Премия/удержание: ${bonusAmount > 0 ? '+' : ''}${bonusAmount} ₽<br>
-                        <strong>Итого: ${finalAmount} ₽</strong>
-                    </div>
-                `;
+                const resultDiv = app.getElement('calculation-result');
+                if (resultDiv) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>Выплата создана!</strong><br>
+                            Сотрудник: ${user.fullName || user.email}<br>
+                            Период: ${fromDate} - ${toDate}<br>
+                            Обычных: ${regularCount} × ${rate} ₽ = ${regularCount * rate} ₽<br>
+                            Подработок: ${extraCount} × ${rate + 100} ₽ = ${extraCount * (rate + 100)} ₽<br>
+                            Премия/удержание: ${bonus > 0 ? '+' : ''}${bonus} ₽<br>
+                            <strong>Итого: ${finalAmount} ₽</strong>
+                        </div>
+                    `;
+                }
                 
             } catch (error) {
                 alert('Ошибка: ' + error.message);
@@ -1034,81 +1137,103 @@
         
         // === ИСТОРИЯ ВЫПЛАТ ===
         async function loadPaymentHistory(userId) {
-            const snapshot = await db.collection('salary_payments')
-                .where('userId', '==', userId)
-                .orderBy('createdAt', 'desc')
-                .limit(20)
-                .get();
-            
-            const container = document.getElementById('payments-history');
-            if (snapshot.empty) {
-                container.innerHTML = '<tr><td colspan="9">Нет выплат</td></tr>';
-                return;
-            }
-            
-            let html = '';
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const date = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleDateString() : 'Дата неизвестна';
-                const bonusSign = data.bonus > 0 ? '+' : '';
+            try {
+                const snapshot = await db.collection('salary_payments')
+                    .where('userId', '==', userId)
+                    .orderBy('createdAt', 'desc')
+                    .limit(20)
+                    .get();
                 
-                html += `
-                    <tr>
-                        <td>${date}</td>
-                        <td>${data.periodFrom}<br>${data.periodTo}</td>
-                        <td>${data.regularShifts || 0}</td>
-                        <td>${data.extraShifts || 0}</td>
-                        <td>${data.baseAmount || 0} ₽</td>
-                        <td>${bonusSign}${data.bonus || 0} ₽</td>
-                        <td>${data.bonus < 0 ? data.bonus * -1 : 0} ₽</td>
-                        <td>${data.bonusNote || ''}</td>
-                        <td><strong>${data.totalAmount || 0} ₽</strong></td>
-                    </tr>
-                `;
-            });
-            container.innerHTML = html;
+                const container = app.getElement('payments-history');
+                if (!container) return;
+                
+                if (snapshot.empty) {
+                    container.innerHTML = '<tr><td colspan="9">Нет выплат</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const date = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleDateString() : 'Дата неизвестна';
+                    const bonusSign = data.bonus > 0 ? '+' : '';
+                    
+                    html += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${data.periodFrom}<br>${data.periodTo}</td>
+                            <td>${data.regularShifts || 0}</td>
+                            <td>${data.extraShifts || 0}</td>
+                            <td>${data.baseAmount || 0} ₽</td>
+                            <td>${bonusSign}${data.bonus || 0} ₽</td>
+                            <td>${data.bonus < 0 ? data.bonus * -1 : 0} ₽</td>
+                            <td>${data.bonusNote || ''}</td>
+                            <td><strong>${data.totalAmount || 0} ₽</strong></td>
+                        </tr>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Ошибка загрузки истории выплат:', error);
+            }
         }
         
         // === ИНИЦИАЛИЗАЦИЯ ===
         function init() {
-            // Навигация
-            document.getElementById('nav-home').addEventListener('click', (e) => {
-                e.preventDefault();
-                showSection('welcome');
-            });
-            document.getElementById('nav-login').addEventListener('click', (e) => {
-                e.preventDefault();
-                showSection('login');
-            });
-            document.getElementById('nav-admin').addEventListener('click', (e) => {
-                e.preventDefault();
-                showSection('admin');
-            });
-            document.getElementById('nav-user').addEventListener('click', (e) => {
-                e.preventDefault();
-                showSection('user');
-            });
-            document.getElementById('nav-logout').addEventListener('click', () => {
-                auth.signOut();
-            });
-            
             // Табы
             initTabs();
             
+            // Навигация
+            app.safeAddEventListener('nav-home', 'click', (e) => {
+                e.preventDefault();
+                app.showSection('welcome');
+            });
+            app.safeAddEventListener('nav-login', 'click', (e) => {
+                e.preventDefault();
+                app.showSection('login');
+            });
+            app.safeAddEventListener('nav-admin', 'click', (e) => {
+                e.preventDefault();
+                app.showSection('admin');
+            });
+            app.safeAddEventListener('nav-user', 'click', (e) => {
+                e.preventDefault();
+                app.showSection('user');
+            });
+            app.safeAddEventListener('nav-logout', 'click', () => {
+                auth.signOut();
+            });
+            
+            // Кнопка "Вход в систему" на главной
+            app.safeAddEventListener('go-to-login', 'click', (e) => {
+                e.preventDefault();
+                app.showSection('login');
+            });
+            
             // Управление календарем
-            document.getElementById('selected-month').addEventListener('change', renderAdminCalendar);
-            document.getElementById('selected-year').addEventListener('change', renderAdminCalendar);
+            const monthSelect = app.getElement('selected-month');
+            const yearInput = app.getElement('selected-year');
+            
+            if (monthSelect) {
+                monthSelect.value = currentMonth;
+                monthSelect.addEventListener('change', renderAdminCalendar);
+            }
+            if (yearInput) {
+                yearInput.value = currentYear;
+                yearInput.addEventListener('change', renderAdminCalendar);
+            }
             
             // Начальные даты для периода
             const today = new Date();
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            document.getElementById('period-from').valueAsDate = firstDay;
-            document.getElementById('period-to').valueAsDate = today;
+            const periodFrom = app.getElement('period-from');
+            const periodTo = app.getElement('period-to');
             
-            // Начальное состояние
-            document.getElementById('selected-month').value = currentMonth;
-            document.getElementById('selected-year').value = currentYear;
-            showSection('welcome');
+            if (periodFrom) periodFrom.valueAsDate = firstDay;
+            if (periodTo) periodTo.valueAsDate = today;
+            
+            // Начальная секция
+            app.showSection('welcome');
         }
         
         // === ОБРАБОТЧИК АУТЕНТИФИКАЦИИ ===
@@ -1122,19 +1247,19 @@
                 const isAdmin = userDoc.exists && userDoc.data().role === 'admin';
                 
                 if (isAdmin) {
-                    showSection('admin');
+                    app.showSection('admin');
                 } else {
                     await loadShiftsForUser(user.uid);
                     updateUserStats();
                     renderUserCalendar();
                     loadPaymentHistory(user.uid);
-                    showSection('user');
+                    app.showSection('user');
                 }
                 
-                updateNavigation();
+                app.updateNavigation();
             } else {
-                showSection('welcome');
-                updateNavigation();
+                app.showSection('welcome');
+                app.updateNavigation();
             }
         });
         

@@ -402,17 +402,29 @@
             document.getElementById('nav-logout').classList.toggle('hidden', !isLoggedIn);
         }
         
-        // === АУТЕНТИФИКАЦИЯ ===
-        document.getElementById('login-btn').addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-            } catch (error) {
-                showMessage('login-message', `Ошибка: ${error.message}`, true);
-            }
-        });
+       // === АУТЕНТИФИКАЦИЯ ===
+document.getElementById('login-btn').addEventListener('click', async () => {
+    console.log('DEBUG: Кнопка входа нажата');
+    
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    console.log('DEBUG: Email:', email, 'Password:', password ? '***' : 'пусто');
+    
+    if (!email || !password) {
+        alert('Введите email и пароль');
+        return;
+    }
+    
+    try {
+        console.log('DEBUG: Пытаюсь войти в Firebase...');
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        console.log('DEBUG: Успешно! Пользователь:', userCredential.user.uid);
+    } catch (error) {
+        console.error('DEBUG: Ошибка Firebase:', error.code, error.message);
+        alert('Ошибка: ' + error.message);
+    }
+});
         
         // === ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ ===
         async function loadUsers() {

@@ -595,7 +595,7 @@ document.getElementById('login-btn').addEventListener('click', async () => {
                     // 3. Если отработана -> снимаем отметку done
                     // 4. Если снова нет смены -> удаляем
                     
-                    const shiftTypes = ['regular', 'extra', 'dayoff', 'problem'];
+                    const shiftTypes = ['regular', 'extra', 'dayoff', 'problem', 'done', null];
                     
                     if (!currentType) {
                         // 1. Нет смены -> выбираем тип

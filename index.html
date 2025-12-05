@@ -568,7 +568,7 @@ document.getElementById('login-btn').addEventListener('click', async () => {
             }
             
             container.innerHTML = html;
-            
+            }
                         // Обработка кликов по дням (админ)
             container.querySelectorAll('.calendar-day').forEach(day => {
                 day.addEventListener('click', function(e) {
@@ -959,7 +959,7 @@ payments.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0
         
         // ЗАПУСК
         document.addEventListener('DOMContentLoaded', init);
-    } // ← ЭТА СТРОКА ДОЛЖНА БЫТЬ ОДНА И БЫТЬ В КОНЦЕ
+    }); // ← Только эта строка
 </script>
 </body>
 </html>

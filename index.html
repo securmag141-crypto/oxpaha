@@ -569,7 +569,7 @@ document.getElementById('login-btn').addEventListener('click', async () => {
             
             container.innerHTML = html;
             
-            // Обработка кликов по дням
+            // Обработка кликов по дням (админ)
             container.querySelectorAll('.calendar-day').forEach(day => {
                 day.addEventListener('click', function(e) {
                     if (!selectedUserId) {
@@ -589,32 +589,51 @@ document.getElementById('login-btn').addEventListener('click', async () => {
                         return;
                     }
                     
-                    // Цикл типов смен
-                    const shiftTypes = ['regular', 'extra', 'dayoff', 'problem', null];
-                    const currentIndex = shiftTypes.indexOf(currentType);
-                    const nextIndex = (currentIndex + 1) % shiftTypes.length;
-                    const nextType = shiftTypes[nextIndex];
+                    // ЛОГИКА:
+                    // 1. Если нет смены -> выбираем тип (regular, extra, dayoff, problem)
+                    // 2. Если есть смена и не отработана -> отмечаем как отработанную (done)
+                    // 3. Если отработана -> снимаем отметку done
+                    // 4. Если снова нет смены -> удаляем
                     
-                    // Обновляем визуально
-                    marker.className = 'shift-marker';
-                    marker.setAttribute('data-done', 'false');
+                    const shiftTypes = ['regular', 'extra', 'dayoff', 'problem'];
                     
-                    if (nextType) {
+                    if (!currentType) {
+                        // 1. Нет смены -> выбираем тип
+                        const nextType = shiftTypes[0];
+                        marker.className = 'shift-marker';
                         marker.classList.add(`shift-${nextType}`);
                         marker.setAttribute('data-shift-type', nextType);
-                    } else {
-                        marker.setAttribute('data-shift-type', '');
-                    }
-                    
-                    // Сохраняем в локальной карте
-                    if (!shiftsMap[selectedUserId]) shiftsMap[selectedUserId] = {};
-                    if (nextType) {
+                        marker.setAttribute('data-done', 'false');
+                        
+                        if (!shiftsMap[selectedUserId]) shiftsMap[selectedUserId] = {};
                         shiftsMap[selectedUserId][date] = {
                             type: nextType,
                             done: false,
                             paid: false
                         };
+                        
+                    } else if (currentType && !isDone) {
+                        // 2. Есть смена, не отработана -> отмечаем как отработанную
+                        marker.className = 'shift-marker';
+                        marker.classList.add('shift-done');
+                        marker.setAttribute('data-done', 'true');
+                        
+                        shiftsMap[selectedUserId][date].done = true;
+                        
+                    } else if (isDone) {
+                        // 3. Отработана -> снимаем отметку done
+                        marker.className = 'shift-marker';
+                        marker.classList.add(`shift-${currentType}`);
+                        marker.setAttribute('data-done', 'false');
+                        
+                        shiftsMap[selectedUserId][date].done = false;
+                        
                     } else {
+                        // 4. Удаляем смену (если клик еще раз)
+                        marker.className = 'shift-marker';
+                        marker.removeAttribute('data-shift-type');
+                        marker.removeAttribute('data-done');
+                        
                         delete shiftsMap[selectedUserId][date];
                     }
                 });

@@ -448,12 +448,12 @@
                 const navUser = this.getElement('nav-user');
                 const navLogout = this.getElement('nav-logout');
                 
-                // Для админа скрываем кнопку "Кабинет", показываем только "Админ"
-                if (navHome) navHome.classList.toggle('hidden', isLoggedIn && !isAdmin);
-                if (navLogin) navLogin.classList.toggle('hidden', isLoggedIn);
-                if (navAdmin) navAdmin.classList.toggle('hidden', !isAdmin);
-                if (navUser) navUser.classList.toggle('hidden', !isLoggedIn || isAdmin); // Скрываем для админа
-                if (navLogout) navLogout.classList.toggle('hidden', !isLoggedIn);
+               // Админ видит и "Админ" и "Кабинет"
+if (navHome) navHome.classList.toggle('hidden', isLoggedIn);
+if (navLogin) navLogin.classList.toggle('hidden', isLoggedIn);
+if (navAdmin) navAdmin.classList.toggle('hidden', !isAdmin);
+if (navUser) navUser.classList.toggle('hidden', !isLoggedIn); // Админ ТОЖЕ видит кабинет!
+if (navLogout) navLogout.classList.toggle('hidden', !isLoggedIn);
             },
             
             safeAddEventListener: function(id, event, handler) {

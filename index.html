@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Календарь смен</title>
+    <title>Личный кабинет Охранника</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -11,54 +11,212 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Roboto', sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; }
+        body { font-family: 'Roboto', sans-serif; background: #0a192f; color: #e6f1ff; line-height: 1.6; }
         
-        /* HEADER */
-        header { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .logo { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .logo i { color: #3498db; }
+        /* HEADER - ТЕМНО-СИНИЙ */
+        header { 
+            background: linear-gradient(135deg, #0a192f, #112240); 
+            color: #64ffda; 
+            padding: 1rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-bottom: 2px solid #64ffda;
+        }
+        .logo { 
+            font-size: 1.4rem; 
+            font-weight: 700; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+        .logo i { color: #64ffda; }
         nav ul { display: flex; list-style: none; gap: 1rem; flex-wrap: wrap; }
-        nav a { color: white; text-decoration: none; font-weight: 500; padding: 0.5rem; border-radius: 4px; transition: background 0.3s; font-size: 0.9rem; white-space: nowrap; }
-        nav a:hover { background: rgba(255,255,255,0.1); }
+        nav a { 
+            color: #ccd6f6; 
+            text-decoration: none; 
+            font-weight: 500; 
+            padding: 0.6rem 1rem; 
+            border-radius: 6px; 
+            transition: all 0.3s; 
+            font-size: 0.95rem; 
+            white-space: nowrap;
+            background: rgba(100, 255, 218, 0.1);
+        }
+        nav a:hover { 
+            background: rgba(100, 255, 218, 0.2); 
+            color: #64ffda;
+            transform: translateY(-2px);
+        }
         
         /* MAIN */
-        main { max-width: 1200px; margin: 1rem auto; padding: 0 1rem; }
-        .container { background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); padding: 1.5rem; margin-bottom: 1.5rem; }
-        h1 { color: #2c3e50; margin-bottom: 1rem; border-bottom: 3px solid #3498db; padding-bottom: 0.5rem; font-size: 1.4rem; }
-        h2 { color: #34495e; margin: 1rem 0 0.5rem; font-size: 1.2rem; }
-        h3 { color: #2c3e50; margin: 0.8rem 0 0.5rem; font-size: 1.1rem; }
+        main { max-width: 1400px; margin: 1.5rem auto; padding: 0 1rem; }
+        .container { 
+            background: #112240; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4); 
+            padding: 1.8rem; 
+            margin-bottom: 1.8rem;
+            border: 1px solid #233554;
+        }
+        h1 { 
+            color: #64ffda; 
+            margin-bottom: 1.2rem; 
+            border-bottom: 2px solid #64ffda; 
+            padding-bottom: 0.6rem; 
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h2 { 
+            color: #ccd6f6; 
+            margin: 1.2rem 0 0.6rem; 
+            font-size: 1.3rem;
+            border-left: 4px solid #64ffda;
+            padding-left: 10px;
+        }
+        h3 { 
+            color: #a8b2d1; 
+            margin: 1rem 0 0.5rem; 
+            font-size: 1.1rem; 
+        }
         
         /* TABS */
-        .tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 1.5rem; overflow-x: auto; }
-        .tab { padding: 0.8rem 1.2rem; background: none; border: none; font-size: 1rem; color: #666; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; }
-        .tab.active { color: #3498db; border-bottom-color: #3498db; font-weight: 600; }
+        .tabs { 
+            display: flex; 
+            border-bottom: 2px solid #233554; 
+            margin-bottom: 1.8rem; 
+            overflow-x: auto; 
+        }
+        .tab { 
+            padding: 0.9rem 1.4rem; 
+            background: none; 
+            border: none; 
+            font-size: 1rem; 
+            color: #8892b0; 
+            cursor: pointer; 
+            white-space: nowrap; 
+            border-bottom: 3px solid transparent; 
+            transition: all 0.3s;
+        }
+        .tab.active { 
+            color: #64ffda; 
+            border-bottom-color: #64ffda; 
+            font-weight: 600; 
+            background: rgba(100, 255, 218, 0.05);
+        }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
         /* FORMS */
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.3rem; font-weight: 500; color: #555; font-size: 0.9rem; }
-        input, select, button, textarea { width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 5px; font-size: 0.95rem; }
-        button { background: linear-gradient(to right, #3498db, #2980b9); color: white; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        button:hover { background: linear-gradient(to right, #2980b9, #1c5a80); }
-        .btn-secondary { background: #95a5a6; }
-        .btn-secondary:hover { background: #7f8c8d; }
-        .btn-success { background: #27ae60; }
-        .btn-success:hover { background: #219653; }
-        .btn-danger { background: #e74c3c; }
-        .btn-danger:hover { background: #c0392b; }
-        .btn-small { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { 
+            display: block; 
+            margin-bottom: 0.4rem; 
+            font-weight: 500; 
+            color: #a8b2d1; 
+            font-size: 0.95rem; 
+        }
+        input, select, button, textarea { 
+            width: 100%; 
+            padding: 0.8rem; 
+            border: 1px solid #233554; 
+            border-radius: 6px; 
+            font-size: 0.95rem; 
+            background: #0a192f;
+            color: #e6f1ff;
+            transition: all 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #64ffda;
+            box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+        }
+        button { 
+            background: linear-gradient(to right, #64ffda, #52d9c8); 
+            color: #0a192f; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.3s; 
+            font-size: 1rem;
+        }
+        button:hover { 
+            background: linear-gradient(to right, #52d9c8, #3bc5b4); 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+        }
+        .btn-secondary { 
+            background: #495670; 
+            color: #e6f1ff;
+        }
+        .btn-secondary:hover { 
+            background: #3d4a5e;
+            transform: translateY(-2px);
+        }
+        .btn-success { 
+            background: linear-gradient(to right, #20c997, #17a589); 
+            color: white;
+        }
+        .btn-success:hover { 
+            background: linear-gradient(to right, #17a589, #12876f);
+        }
+        .btn-danger { 
+            background: linear-gradient(to right, #ff6b6b, #ee5a52); 
+            color: white;
+        }
+        .btn-danger:hover { 
+            background: linear-gradient(to right, #ee5a52, #d64541);
+        }
+        .btn-small { 
+            padding: 0.5rem 1rem; 
+            font-size: 0.85rem; 
+        }
         
-        /* CALENDAR */
-        .calendar-controls { display: flex; gap: 0.8rem; margin-bottom: 1rem; align-items: center; flex-wrap: wrap; }
-        .calendar-controls select, .calendar-controls input { flex: 1; min-width: 120px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .calendar-header { background: #3498db; color: white; padding: 0.6rem; text-align: center; font-weight: 600; border-radius: 5px; font-size: 0.85rem; }
-        .calendar-day { background: #f8f9fa; border: 1px solid #e0e0e0; min-height: 70px; padding: 0.4rem; position: relative; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
-        .calendar-day:hover { background: #e9ecef; }
-        .day-number { font-weight: bold; margin-bottom: 0.2rem; color: #555; font-size: 0.9rem; }
+        /* ТАБЛИЦА СМЕН АДМИНА */
+        .shifts-admin-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 1rem; 
+            font-size: 0.9rem;
+            background: #0a192f;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .shifts-admin-table th, 
+        .shifts-admin-table td { 
+            padding: 0.8rem; 
+            text-align: center; 
+            border: 1px solid #233554; 
+        }
+        .shifts-admin-table th { 
+            background: #112240; 
+            font-weight: 600; 
+            color: #64ffda;
+            position: sticky;
+            top: 0;
+        }
+        .shifts-admin-table tr:nth-child(even) {
+            background: rgba(17, 34, 64, 0.5);
+        }
+        .shifts-admin-table tr:hover {
+            background: rgba(100, 255, 218, 0.05);
+        }
+        .shifts-cell { 
+            min-width: 40px; 
+            height: 40px; 
+            cursor: pointer; 
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .shifts-cell:hover { 
+            transform: scale(1.1); 
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
         
-        /* SHIFT COLORS */
+        /* ЦВЕТА СМЕН */
         .shift-regular { background: #2ecc71; } /* зелёный */
         .shift-extra { background: #a3e4d7; } /* салатовый */
         .shift-dayoff { background: #3498db; } /* синий */
@@ -68,71 +226,242 @@
         .shift-done-extra { background: #95a5a6; color: white; } /* серый */
         .shift-paid-extra { background: #e84393; color: white; } /* розовый */
         
-        .shift-marker { 
-            height: 10px; 
+        /* КОНТРОЛЫ ДЛЯ ТАБЛИЦЫ СМЕН */
+        .shifts-controls { 
+            display: flex; 
+            gap: 1rem; 
+            margin-bottom: 1.5rem; 
+            align-items: center; 
+            flex-wrap: wrap;
+            background: #0a192f;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #233554;
+        }
+        .shifts-controls select, 
+        .shifts-controls input { 
+            flex: 1; 
+            min-width: 150px; 
+        }
+        
+        /* POSTS TABLE */
+        .posts-table { 
             width: 100%; 
-            border-radius: 2px; 
-            margin-top: 3px;
+            border-collapse: collapse; 
+            margin-top: 1rem; 
+            font-size: 0.9rem;
+            background: #0a192f;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .posts-table th, 
+        .posts-table td { 
+            padding: 0.8rem; 
+            text-align: left; 
+            border-bottom: 1px solid #233554; 
+        }
+        .posts-table th { 
+            background: #112240; 
+            font-weight: 600; 
+            color: #64ffda;
+        }
+        .posts-table .post-controls { display: flex; gap: 0.5rem; }
+        .post-row input, 
+        .post-row select { 
+            padding: 0.5rem; 
+            font-size: 0.85rem; 
+            background: #0a192f;
+            color: #e6f1ff;
+            border: 1px solid #233554;
+        }
+        .table-responsive { 
+            overflow-x: auto; 
+            border-radius: 8px;
+            border: 1px solid #233554;
+        }
+        
+        /* POSTS MANAGEMENT */
+        .posts-management { margin-top: 2rem; }
+        .posts-date-control { 
+            display: flex; 
+            gap: 1rem; 
+            align-items: center; 
+            margin-bottom: 1.5rem; 
+            flex-wrap: wrap; 
+            background: #0a192f;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #233554;
+        }
+        .posts-date-control input { 
+            max-width: 200px; 
+            background: #0a192f;
+            color: #e6f1ff;
+        }
+        
+        /* USER PROFILE */
+        .user-profile { 
+            background: linear-gradient(135deg, #112240, #0a192f); 
+            color: #e6f1ff; 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            margin-bottom: 1.8rem;
+            border: 1px solid #64ffda;
+            box-shadow: 0 5px 20px rgba(100, 255, 218, 0.1);
+        }
+        .user-profile h1 { 
+            color: #64ffda; 
+            border-bottom: none; 
+            margin-bottom: 0.8rem; 
+        }
+        .profile-info { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 1.2rem; 
+            margin-top: 1.2rem; 
+        }
+        .profile-item { }
+        .profile-label { 
+            font-size: 0.85rem; 
+            color: #a8b2d1; 
+        }
+        .profile-value { 
+            font-size: 1.2rem; 
+            font-weight: bold; 
+            color: #64ffda;
+        }
+        
+        /* CALENDAR (для пользователя) */
+        .calendar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 8px; 
+            margin-top: 1rem;
+        }
+        .calendar-header { 
+            background: #233554; 
+            color: #64ffda; 
+            padding: 0.8rem; 
+            text-align: center; 
+            font-weight: 600; 
+            border-radius: 6px; 
+            font-size: 0.9rem; 
+        }
+        .calendar-day { 
+            background: #0a192f; 
+            border: 1px solid #233554; 
+            min-height: 80px; 
+            padding: 0.5rem; 
+            position: relative; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+        }
+        .calendar-day:hover { 
+            background: #112240; 
+            border-color: #64ffda;
+            transform: translateY(-3px);
+        }
+        .day-number { 
+            font-weight: bold; 
+            margin-bottom: 0.3rem; 
+            color: #64ffda; 
+            font-size: 0.95rem; 
+        }
+        .shift-marker { 
+            height: 12px; 
+            width: 100%; 
+            border-radius: 3px; 
+            margin-top: 4px;
             cursor: pointer;
         }
         
         /* SHIFT LEGEND */
-        .legend { display: flex; flex-wrap: wrap; gap: 0.8rem; margin: 1rem 0; }
-        .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
-        .legend-color { width: 16px; height: 16px; border-radius: 3px; }
-        
-        /* USER PROFILE */
-        .user-profile { background: linear-gradient(135deg, #3498db, #2c3e50); color: white; padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; }
-        .user-profile h1 { color: white; border-bottom: none; margin-bottom: 0.5rem; }
-        .profile-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
-        .profile-item { }
-        .profile-label { font-size: 0.8rem; opacity: 0.8; }
-        .profile-value { font-size: 1.1rem; font-weight: bold; }
-        
-        /* POSTS TABLE */
-        .posts-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
-        .posts-table th, .posts-table td { padding: 0.8rem; text-align: left; border-bottom: 1px solid #eee; }
-        .posts-table th { background: #f8f9fa; font-weight: 600; }
-        .posts-table .post-controls { display: flex; gap: 0.5rem; }
-        .post-row input, .post-row select { padding: 0.4rem; font-size: 0.85rem; }
-        .table-responsive { overflow-x: auto; }
-        
-        /* POSTS MANAGEMENT */
-        .posts-management { margin-top: 2rem; }
-        .posts-date-control { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
-        .posts-date-control input { max-width: 200px; }
+        .legend { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 1rem; 
+            margin: 1.2rem 0; 
+            background: #0a192f;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #233554;
+        }
+        .legend-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 0.6rem; 
+            font-size: 0.85rem;
+            color: #a8b2d1;
+        }
+        .legend-color { 
+            width: 18px; 
+            height: 18px; 
+            border-radius: 4px; 
+            border: 1px solid #233554;
+        }
         
         /* UTILS */
         .hidden { display: none !important; }
-        .message { padding: 0.8rem; border-radius: 5px; margin: 0.8rem 0; font-size: 0.9rem; }
-        .error { background: #ffeaea; color: #c0392b; border: 1px solid #ffcccc; }
-        .success { background: #e8f6ef; color: #27ae60; border: 1px solid #abebc6; }
-        .flex { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .message { 
+            padding: 1rem; 
+            border-radius: 8px; 
+            margin: 1rem 0; 
+            font-size: 0.95rem; 
+            border-left: 4px solid;
+        }
+        .error { 
+            background: rgba(231, 76, 60, 0.1); 
+            color: #ff6b6b; 
+            border-left-color: #ff6b6b;
+        }
+        .success { 
+            background: rgba(39, 174, 96, 0.1); 
+            color: #2ecc71; 
+            border-left-color: #2ecc71;
+        }
+        .flex { 
+            display: flex; 
+            gap: 1.2rem; 
+            flex-wrap: wrap; 
+        }
         .text-right { text-align: right; }
         
         /* FOOTER */
-        footer { text-align: center; padding: 1.5rem; color: #7f8c8d; border-top: 1px solid #eee; margin-top: 2rem; font-size: 0.9rem; }
+        footer { 
+            text-align: center; 
+            padding: 1.8rem; 
+            color: #8892b0; 
+            border-top: 1px solid #233554; 
+            margin-top: 3rem; 
+            font-size: 0.9rem; 
+            background: #0a192f;
+        }
         
         /* MOBILE */
         @media (max-width: 768px) {
             header { flex-direction: column; gap: 1rem; padding: 1rem; }
             nav ul { width: 100%; justify-content: center; }
-            .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; }
-            .calendar-day { min-height: 60px; padding: 0.3rem; }
-            .calendar-header { padding: 0.5rem; font-size: 0.8rem; }
-            .shift-marker { height: 8px; }
-            .container { padding: 1rem; }
+            .container { padding: 1.2rem; }
             .tabs { overflow-x: scroll; -webkit-overflow-scrolling: touch; }
-            .tab { padding: 0.6rem 1rem; font-size: 0.9rem; }
+            .tab { padding: 0.7rem 1rem; font-size: 0.9rem; }
             .profile-info { grid-template-columns: 1fr; }
             .posts-date-control { flex-direction: column; align-items: flex-start; }
             .posts-date-control input { max-width: 100%; }
+            .shifts-controls { flex-direction: column; align-items: stretch; }
+            .shifts-controls select, 
+            .shifts-controls input { min-width: 100%; }
+            .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 5px; }
+            .calendar-day { min-height: 70px; padding: 0.4rem; }
+            .calendar-header { padding: 0.6rem; font-size: 0.8rem; }
+            .shift-marker { height: 10px; }
         }
         
         @media (max-width: 480px) {
-            .calendar-day { min-height: 50px; }
-            .day-number { font-size: 0.8rem; }
-            .calendar-header { font-size: 0.75rem; padding: 0.4rem; }
+            .calendar-day { min-height: 60px; }
+            .day-number { font-size: 0.85rem; }
+            .calendar-header { font-size: 0.75rem; padding: 0.5rem; }
+            nav a { padding: 0.5rem 0.8rem; font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -140,8 +469,8 @@
     <!-- HEADER -->
     <header>
         <div class="logo">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Календарь смен</span>
+            <i class="fas fa-shield-alt"></i>
+            <span>Личный кабинет Охранника</span>
         </div>
         <nav>
             <ul>
@@ -158,8 +487,8 @@
     <main>
         <!-- WELCOME SECTION -->
         <section id="welcome-section" class="container">
-            <h1><i class="fas fa-calendar-check"></i> Система планирования смен</h1>
-            <p>Администраторы назначают смены, сотрудники просматривают свои графики работы.</p>
+            <h1><i class="fas fa-shield-alt"></i> Система планирования смен</h1>
+            <p style="color: #a8b2d1; font-size: 1.1rem;">Администраторы назначают смены, сотрудники просматривают свои графики работы.</p>
             <button id="go-to-login" onclick="app.showSection('login-section')"><i class="fas fa-sign-in-alt"></i> Вход в систему</button>
         </section>
 
@@ -181,82 +510,67 @@
         <!-- ADMIN SECTION -->
         <section id="admin-section" class="container hidden">
             <div class="tabs">
-                <button class="tab active" data-tab="shifts"><i class="fas fa-calendar-alt"></i> Смены</button>
+                <button class="tab active" data-tab="shifts-admin"><i class="fas fa-calendar-alt"></i> Смены</button>
                 <button class="tab" data-tab="payments"><i class="fas fa-money-bill-wave"></i> Выплаты</button>
                 <button class="tab" data-tab="posts-admin"><i class="fas fa-clipboard-list"></i> Постовая</button>
+                <button class="tab" data-tab="users-admin"><i class="fas fa-users"></i> Сотрудники</button>
             </div>
             
-            <!-- ВКЛАДКА: СМЕНЫ -->
-            <div id="tab-shifts" class="tab-content active">
-                <div class="flex">
-                    <!-- ЛЕВАЯ КОЛОНКА -->
-                    <div style="flex: 1;">
-                        <h1><i class="fas fa-user-cog"></i> Админ-панель</h1>
-                        
-                        <h2><i class="fas fa-user-plus"></i> Новый охранник</h2>
-                        <div class="form-group">
-                            <input type="email" id="new-user-email" placeholder="Email охранника">
-                        </div>
-                        <div class="form-group">
-                            <input type="password" id="new-user-password" placeholder="Пароль">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="new-user-name" placeholder="Имя и фамилия">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="new-user-rate" placeholder="Ставка за смену" value="1500">
-                        </div>
-                        <button id="create-user-btn"><i class="fas fa-plus"></i> Создать охранника</button>
-                        
-                        <h2><i class="fas fa-users"></i> Все охранники</h2>
-                        <div id="users-container" class="user-list"></div>
+            <!-- ВКЛАДКА: СМЕНЫ (АДМИН) -->
+            <div id="tab-shifts-admin" class="tab-content active">
+                <h1><i class="fas fa-user-cog"></i> Административная панель</h1>
+                
+                <div class="shifts-controls">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Месяц:</label>
+                        <select id="selected-month">
+                            <option value="0">Январь</option><option value="1">Февраль</option>
+                            <option value="2">Март</option><option value="3">Апрель</option>
+                            <option value="4">Май</option><option value="5">Июнь</option>
+                            <option value="6">Июль</option><option value="7">Август</option>
+                            <option value="8">Сентябрь</option><option value="9">Октябрь</option>
+                            <option value="10">Ноябрь</option><option value="11">Декабрь</option>
+                        </select>
                     </div>
-                    
-                    <!-- ПРАВАЯ КОЛОНКА -->
-                    <div style="flex: 2;">
-                        <h2><i class="fas fa-calendar-alt"></i> Назначение смен</h2>
-                        
-                        <div class="calendar-controls">
-                            <div class="form-group" style="flex: 1;">
-                                <label>Охранник:</label>
-                                <select id="selected-user"></select>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label>Месяц:</label>
-                                <select id="selected-month">
-                                    <option value="0">Январь</option><option value="1">Февраль</option>
-                                    <option value="2">Март</option><option value="3">Апрель</option>
-                                    <option value="4">Май</option><option value="5">Июнь</option>
-                                    <option value="6">Июль</option><option value="7">Август</option>
-                                    <option value="8">Сентябрь</option><option value="9">Октябрь</option>
-                                    <option value="10">Ноябрь</option><option value="11">Декабрь</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label>Год:</label>
-                                <input type="number" id="selected-year" value="2024">
-                            </div>
-                        </div>
-                        
-                        <!-- ЦВЕТА СМЕН -->
-                        <div class="legend">
-                            <div class="legend-item"><div class="legend-color shift-regular"></div><span>Обычная</span></div>
-                            <div class="legend-item"><div class="legend-color shift-extra"></div><span>Подработка</span></div>
-                            <div class="legend-item"><div class="legend-color shift-done"></div><span>Отработано</span></div>
-                            <div class="legend-item"><div class="legend-color shift-done-extra"></div><span>Подработка отр.</span></div>
-                            <div class="legend-item"><div class="legend-color shift-paid"></div><span>Оплачено</span></div>
-                            <div class="legend-item"><div class="legend-color shift-paid-extra"></div><span>Подр. оплач.</span></div>
-                            <div class="legend-item"><div class="legend-color shift-dayoff"></div><span>Выходной</span></div>
-                            <div class="legend-item"><div class="legend-color shift-problem"></div><span>Проблема</span></div>
-                        </div>
-                        
-                        <!-- КАЛЕНДАРЬ (5 строк по 7 дней) -->
-                        <div id="admin-calendar" class="calendar-grid"></div>
-                        
-                        <div style="margin-top: 1rem;">
-                            <button id="save-shifts-btn"><i class="fas fa-save"></i> Сохранить смены</button>
-                        </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Год:</label>
+                        <input type="number" id="selected-year" value="2024">
                     </div>
+                    <div style="flex: 2; display: flex; align-items: flex-end;">
+                        <button id="load-all-shifts-btn" class="btn-success"><i class="fas fa-sync-alt"></i> Загрузить смены</button>
+                        <button id="save-all-shifts-btn" style="margin-left: 10px;"><i class="fas fa-save"></i> Сохранить все</button>
+                    </div>
+                </div>
+                
+                <!-- ЦВЕТА СМЕН -->
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-color shift-regular"></div><span>Обычная</span></div>
+                    <div class="legend-item"><div class="legend-color shift-extra"></div><span>Подработка</span></div>
+                    <div class="legend-item"><div class="legend-color shift-done"></div><span>Отработано</span></div>
+                    <div class="legend-item"><div class="legend-color shift-done-extra"></div><span>Подработка отр.</span></div>
+                    <div class="legend-item"><div class="legend-color shift-paid"></div><span>Оплачено</span></div>
+                    <div class="legend-item"><div class="legend-color shift-paid-extra"></div><span>Подр. оплач.</span></div>
+                    <div class="legend-item"><div class="legend-color shift-dayoff"></div><span>Выходной</span></div>
+                    <div class="legend-item"><div class="legend-color shift-problem"></div><span>Проблема</span></div>
+                </div>
+                
+                <!-- ТАБЛИЦА СМЕН АДМИНА -->
+                <div class="table-responsive">
+                    <table class="shifts-admin-table" id="admin-shifts-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">№</th>
+                                <th rowspan="2">Сотрудник</th>
+                                <th colspan="31" id="table-month-year">Январь 2024</th>
+                            </tr>
+                            <tr id="days-header">
+                                <!-- Дни месяца будут добавлены через JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="shifts-table-body">
+                            <!-- Данные будут добавлены через JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
@@ -338,13 +652,47 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- ВКЛАДКА: СОТРУДНИКИ -->
+            <div id="tab-users-admin" class="tab-content">
+                <h2><i class="fas fa-users"></i> Управление сотрудниками</h2>
+                
+                <div class="flex">
+                    <div style="flex: 1;">
+                        <h3><i class="fas fa-user-plus"></i> Новый охранник</h3>
+                        <div class="form-group">
+                            <input type="email" id="new-user-email" placeholder="Email охранника">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="new-user-password" placeholder="Пароль">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="new-user-lastname" placeholder="Фамилия">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="new-user-firstname" placeholder="Имя">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="new-user-rate" placeholder="Ставка за смену" value="1500">
+                        </div>
+                        <button id="create-user-btn"><i class="fas fa-plus"></i> Создать охранника</button>
+                    </div>
+                    
+                    <div style="flex: 2;">
+                        <h3><i class="fas fa-users"></i> Все охранники</h3>
+                        <div id="users-container" class="user-list" style="max-height: 400px; overflow-y: auto; padding: 1rem; background: #0a192f; border-radius: 8px; border: 1px solid #233554;">
+                            <!-- Список сотрудников загрузится через JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- USER SECTION -->
         <section id="user-section" class="container hidden">
             <!-- ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ -->
             <div class="user-profile">
-                <h1><i class="fas fa-user"></i> <span id="user-full-name">Имя Фамилия</span></h1>
+                <h1><i class="fas fa-user"></i> <span id="user-full-name">Фамилия Имя</span></h1>
                 <div class="profile-info">
                     <div class="profile-item">
                         <div class="profile-label">Должность</div>
@@ -405,7 +753,7 @@
                 <!-- ОЖИДАЕМЫЕ ВЫПЛАТЫ -->
                 <h3><i class="fas fa-clock"></i> Ожидаемые выплаты</h3>
                 <div class="table-responsive">
-                    <table>
+                    <table class="posts-table">
                         <thead>
                             <tr>
                                 <th>Тип смены</th>
@@ -418,7 +766,7 @@
                             <tr><td colspan="4">Нет ожидающих выплат</td></tr>
                         </tbody>
                         <tfoot>
-                            <tr style="font-weight: bold;">
+                            <tr style="font-weight: bold; color: #64ffda;">
                                 <td colspan="3">Итого к выплате:</td>
                                 <td id="pending-total">0 ₽</td>
                             </tr>
@@ -429,7 +777,7 @@
                 <!-- ИСТОРИЯ ВЫПЛАТ -->
                 <h3 style="margin-top: 2rem;"><i class="fas fa-history"></i> История выплат</h3>
                 <div class="table-responsive">
-                    <table>
+                    <table class="posts-table">
                         <thead>
                             <tr>
                                 <th>Дата</th>
@@ -454,7 +802,8 @@
 
     <!-- FOOTER -->
     <footer>
-        <p>© 2024 Календарь смен. Работает на Firebase.</p>
+        <p>© 2024 Личный кабинет Охранника. Работает на Firebase.</p>
+        <p style="margin-top: 10px; font-size: 0.8rem; color: #495670;"><i class="fas fa-shield-alt"></i> Безопасность и надежность</p>
     </footer>
 
     <!-- FIREBASE & APP -->
@@ -541,10 +890,10 @@
         let allUsers = [];
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
-        let selectedUserId = '';
         let shiftsMap = {};
         let postsData = [];
         let isAdmin = false;
+        let adminShiftsData = {}; // Данные для таблицы админа
         
         // === ПРЕДУСТАНОВЛЕННЫЕ ПОСТЫ (ШАБЛОН) С НОМЕРАМИ ===
         const defaultPosts = [
@@ -607,43 +956,54 @@
             try {
                 const snapshot = await db.collection('users').get();
                 allUsers = [];
-                snapshot.forEach(doc => allUsers.push({ id: doc.id, ...doc.data() }));
+                snapshot.forEach(doc => {
+                    const userData = doc.data();
+                    // Разделяем ФИО на фамилию и имя
+                    let lastName = '';
+                    let firstName = '';
+                    
+                    if (userData.fullName) {
+                        const nameParts = userData.fullName.split(' ');
+                        if (nameParts.length >= 2) {
+                            lastName = nameParts[0];
+                            firstName = nameParts.slice(1).join(' ');
+                        } else {
+                            firstName = userData.fullName;
+                        }
+                    }
+                    
+                    allUsers.push({ 
+                        id: doc.id, 
+                        ...userData,
+                        lastName: lastName,
+                        firstName: firstName,
+                        displayName: lastName ? `${lastName} ${firstName}` : (userData.fullName || userData.email)
+                    });
+                });
+                
+                // Сортируем по фамилии
+                allUsers.sort((a, b) => {
+                    if (a.lastName && b.lastName) {
+                        return a.lastName.localeCompare(b.lastName);
+                    }
+                    return (a.displayName || '').localeCompare(b.displayName || '');
+                });
                 
                 // Показ списка пользователей
                 const container = app.getElement('users-container');
                 if (container) {
-                    container.innerHTML = allUsers.map(user => `
-                        <div class="user-card ${user.role === 'admin' ? 'admin' : ''}" style="background: #f8f9fa; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px;">
-                            <strong>${user.fullName || user.email}</strong><br>
-                            <small>${user.role === 'admin' ? 'Администратор' : 'Охранник'}</small><br>
-                            <small>Ставка: ${user.rate || 0} ₽</small>
+                    container.innerHTML = allUsers.map((user, index) => `
+                        <div class="user-card ${user.role === 'admin' ? 'admin' : ''}" style="background: #112240; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; border: 1px solid #233554;">
+                            <strong style="color: #64ffda;">${user.displayName || user.email}</strong><br>
+                            <small style="color: #a8b2d1;">${user.role === 'admin' ? 'Администратор' : 'Охранник'}</small><br>
+                            <small style="color: #8892b0;">Ставка: ${user.rate || 0} ₽</small>
+                            ${user.role !== 'admin' ? `<br><small style="color: #495670;">ID: ${user.id.substring(0, 8)}...</small>` : ''}
                         </div>
                     `).join('');
                 }
                 
-                // Селект выбора пользователя
-                const select = app.getElement('selected-user');
+                // Селект выбора пользователя для выплат
                 const paymentSelect = app.getElement('payment-user');
-                
-                if (select) {
-                    select.innerHTML = '<option value="">Выберите охранника</option>';
-                    allUsers.forEach(user => {
-                        if (user.role !== 'admin') {
-                            const option = document.createElement('option');
-                            option.value = user.id;
-                            option.textContent = `${user.fullName || user.email} (${user.rate || 0} ₽)`;
-                            select.appendChild(option);
-                        }
-                    });
-                    
-                    select.addEventListener('change', function() {
-                        selectedUserId = this.value;
-                        if (selectedUserId) {
-                            loadShiftsForUser(selectedUserId);
-                            renderAdminCalendar();
-                        }
-                    });
-                }
                 
                 if (paymentSelect) {
                     paymentSelect.innerHTML = '<option value="">Выберите охранника</option>';
@@ -651,11 +1011,17 @@
                         if (user.role !== 'admin') {
                             const option = document.createElement('option');
                             option.value = user.id;
-                            option.textContent = `${user.fullName || user.email} (${user.rate || 0} ₽)`;
+                            option.textContent = `${user.displayName} (${user.rate || 0} ₽)`;
                             paymentSelect.appendChild(option);
                         }
                     });
                 }
+                
+                // Обновляем таблицу смен если она уже загружена
+                if (isAdmin && document.getElementById('tab-shifts-admin')?.classList.contains('active')) {
+                    await loadAllShiftsForAdmin();
+                }
+                
             } catch (error) {
                 console.error('Ошибка загрузки пользователей:', error);
             }
@@ -665,20 +1031,25 @@
         app.safeAddEventListener('create-user-btn', 'click', async () => {
             const emailInput = app.getElement('new-user-email');
             const passwordInput = app.getElement('new-user-password');
-            const nameInput = app.getElement('new-user-name');
+            const lastnameInput = app.getElement('new-user-lastname');
+            const firstnameInput = app.getElement('new-user-firstname');
             const rateInput = app.getElement('new-user-rate');
             
-            if (!emailInput || !passwordInput || !nameInput || !rateInput) return;
+            if (!emailInput || !passwordInput || !lastnameInput || !firstnameInput || !rateInput) return;
             
             const email = emailInput.value;
             const password = passwordInput.value;
-            const fullName = nameInput.value;
+            const lastName = lastnameInput.value.trim();
+            const firstName = firstnameInput.value.trim();
             const rate = parseInt(rateInput.value) || 1500;
             
-            if (!email || !password || !fullName) {
+            if (!email || !password || !lastName || !firstName) {
                 alert('Заполните все поля');
                 return;
             }
+            
+            // Формируем полное имя: Фамилия Имя
+            const fullName = `${lastName} ${firstName}`;
             
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -686,6 +1057,8 @@
                     email: email,
                     role: 'user',
                     fullName: fullName,
+                    lastName: lastName,
+                    firstName: firstName,
                     rate: rate,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -693,7 +1066,9 @@
                 // Очистка полей
                 emailInput.value = '';
                 passwordInput.value = '';
-                nameInput.value = '';
+                lastnameInput.value = '';
+                firstnameInput.value = '';
+                rateInput.value = '1500';
                 
                 loadUsers();
                 alert(`Охранник ${fullName} создан!`);
@@ -702,239 +1077,347 @@
             }
         });
         
-        // === РАБОТА СО СМЕНАМИ ===
-        async function loadShiftsForUser(userId) {
+        // === ЗАГРУЗКА ВСЕХ СМЕН ДЛЯ АДМИНА ===
+        async function loadAllShiftsForAdmin() {
             try {
+                const month = parseInt(app.getElement('selected-month')?.value || currentMonth);
+                const year = parseInt(app.getElement('selected-year')?.value || currentYear);
+                
+                // Получаем все смены за выбранный месяц
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const startDate = firstDay.toISOString().split('T')[0];
+                const endDate = lastDay.toISOString().split('T')[0];
+                
                 const snapshot = await db.collection('shifts')
-                    .where('userId', '==', userId)
+                    .where('date', '>=', startDate)
+                    .where('date', '<=', endDate)
                     .get();
                 
-                shiftsMap[userId] = {};
+                // Сбрасываем данные
+                adminShiftsData = {};
+                shiftsMap = {};
+                
+                // Группируем смены по пользователям
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    shiftsMap[userId][data.date] = {
+                    const userId = data.userId;
+                    const date = data.date;
+                    
+                    if (!adminShiftsData[userId]) {
+                        adminShiftsData[userId] = {};
+                    }
+                    
+                    adminShiftsData[userId][date] = {
+                        type: data.type,
+                        done: data.done || false,
+                        paid: data.paid || false,
+                        shiftId: doc.id
+                    };
+                    
+                    // Также сохраняем в shiftsMap для других функций
+                    if (!shiftsMap[userId]) {
+                        shiftsMap[userId] = {};
+                    }
+                    shiftsMap[userId][date] = {
                         type: data.type,
                         done: data.done || false,
                         paid: data.paid || false
                     };
                 });
+                
+                // Рендерим таблицу
+                renderAdminShiftsTable(month, year);
+                
             } catch (error) {
-                console.error('Ошибка загрузки смен:', error);
+                console.error('Ошибка загрузки смен для админа:', error);
+                alert('Ошибка загрузки смен: ' + error.message);
             }
         }
         
-        // === РЕНДЕР КАЛЕНДАРЯ АДМИНА ===
-        function renderAdminCalendar() {
-            const container = app.getElement('admin-calendar');
-            if (!container || !selectedUserId) return;
+        // === РЕНДЕР ТАБЛИЦЫ СМЕН АДМИНА ===
+        function renderAdminShiftsTable(month, year) {
+            const tableBody = app.getElement('shifts-table-body');
+            const daysHeader = app.getElement('days-header');
+            const monthYearHeader = app.getElement('table-month-year');
             
-            const yearInput = app.getElement('selected-year');
-            const monthSelect = app.getElement('selected-month');
-            if (!yearInput || !monthSelect) return;
+            if (!tableBody || !daysHeader || !monthYearHeader) return;
             
-            const year = parseInt(yearInput.value) || 2024;
-            const month = parseInt(monthSelect.value) || 0;
+            // Обновляем заголовок месяца
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                               'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            monthYearHeader.textContent = `${monthNames[month]} ${year}`;
             
-            // Заголовки дней
-            const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-            let html = '';
+            // Рассчитываем дни месяца
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
             
-            days.forEach(day => {
-                html += `<div class="calendar-header">${day}</div>`;
-            });
-            
-            // Дни месяца
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const totalDays = lastDay.getDate();
-            const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-            
-            // Пустые клетки до первого дня
-            for (let i = 0; i < startDay; i++) {
-                html += `<div class="calendar-day"></div>`;
-            }
-            
-            // Дни месяца
-            for (let day = 1; day <= totalDays; day++) {
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const shift = shiftsMap[selectedUserId] ? shiftsMap[selectedUserId][dateStr] : null;
+            // Генерируем заголовки дней
+            let daysHtml = '';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dayOfWeek = date.getDay();
+                const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
                 
-                let shiftClass = '';
-                if (shift) {
-                    if (shift.type === 'regular') {
-                        if (shift.paid) shiftClass = 'shift-paid';
-                        else if (shift.done) shiftClass = 'shift-done';
-                        else shiftClass = 'shift-regular';
-                    } else if (shift.type === 'extra') {
-                        if (shift.paid) shiftClass = 'shift-paid-extra';
-                        else if (shift.done) shiftClass = 'shift-done-extra';
-                        else shiftClass = 'shift-extra';
-                    } else if (shift.type === 'dayoff') {
-                        shiftClass = 'shift-dayoff';
-                    } else if (shift.type === 'problem') {
-                        shiftClass = 'shift-problem';
+                daysHtml += `<th style="${dayOfWeek === 0 || dayOfWeek === 6 ? 'color: #ff6b6b;' : ''}">
+                    ${day}<br><small style="font-size: 0.7rem; color: #8892b0;">${dayNames[dayOfWeek]}</small>
+                </th>`;
+            }
+            daysHeader.innerHTML = daysHtml;
+            
+            // Фильтруем только охранников (не админов)
+            const guards = allUsers.filter(user => user.role !== 'admin');
+            
+            // Генерируем строки таблицы
+            let tableHtml = '';
+            guards.forEach((guard, index) => {
+                tableHtml += `<tr data-user-id="${guard.id}">`;
+                tableHtml += `<td style="font-weight: bold; color: #64ffda;">${index + 1}</td>`;
+                tableHtml += `<td style="text-align: left; padding-left: 15px;"><strong>${guard.displayName}</strong><br><small style="color: #8892b0;">${guard.rate || 0} ₽</small></td>`;
+                
+                // Ячейки дней
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const shift = adminShiftsData[guard.id] ? adminShiftsData[guard.id][dateStr] : null;
+                    
+                    let shiftClass = '';
+                    let title = 'Нет смены (клик для добавления)';
+                    
+                    if (shift) {
+                        if (shift.type === 'regular') {
+                            if (shift.paid) {
+                                shiftClass = 'shift-paid';
+                                title = 'Оплаченная обычная смена';
+                            } else if (shift.done) {
+                                shiftClass = 'shift-done';
+                                title = 'Отработанная обычная смена';
+                            } else {
+                                shiftClass = 'shift-regular';
+                                title = 'Обычная смена';
+                            }
+                        } else if (shift.type === 'extra') {
+                            if (shift.paid) {
+                                shiftClass = 'shift-paid-extra';
+                                title = 'Оплаченная подработка';
+                            } else if (shift.done) {
+                                shiftClass = 'shift-done-extra';
+                                title = 'Отработанная подработка';
+                            } else {
+                                shiftClass = 'shift-extra';
+                                title = 'Подработка';
+                            }
+                        } else if (shift.type === 'dayoff') {
+                            shiftClass = 'shift-dayoff';
+                            title = 'Выходной';
+                        } else if (shift.type === 'problem') {
+                            shiftClass = 'shift-problem';
+                            title = 'Проблемная смена';
+                        }
                     }
+                    
+                    tableHtml += `
+                        <td class="shifts-cell ${shiftClass}" 
+                            data-user-id="${guard.id}" 
+                            data-date="${dateStr}"
+                            data-shift-type="${shift ? shift.type : ''}"
+                            data-done="${shift ? shift.done : false}"
+                            data-paid="${shift ? shift.paid : false}"
+                            title="${title}"
+                            style="position: relative;">
+                            ${shift ? '' : '+'}
+                        </td>`;
                 }
                 
-                html += `
-                    <div class="calendar-day" data-date="${dateStr}">
-                        <div class="day-number">${day}</div>
-                        <div class="shift-marker ${shiftClass}" 
-                             data-shift-type="${shift ? shift.type : ''}"
-                             data-done="${shift ? shift.done : false}"
-                             data-paid="${shift ? shift.paid : false}"></div>
-                    </div>
-                `;
-            }
+                tableHtml += `</tr>`;
+            });
             
-            // Дополняем до 35 клеток (5 строк)
-            const totalCells = 35;
-            const filledCells = startDay + totalDays;
-            for (let i = filledCells; i < totalCells; i++) {
-                html += `<div class="calendar-day"></div>`;
-            }
+            tableBody.innerHTML = tableHtml;
             
-            container.innerHTML = html;
-            
-            // Обработка кликов по дням
-            container.querySelectorAll('.calendar-day').forEach(day => {
-                day.addEventListener('click', function(e) {
-                    if (!selectedUserId) {
-                        alert('Сначала выберите охранника');
-                        return;
-                    }
-                    
-                    const date = this.getAttribute('data-date');
-                    if (!date) return;
-                    
-                    const marker = this.querySelector('.shift-marker');
-                    if (!marker) return;
-                    
-                    const currentType = marker.getAttribute('data-shift-type');
-                    const isDone = marker.getAttribute('data-done') === 'true';
-                    const isPaid = marker.getAttribute('data-paid') === 'true';
-                    
-                    if (isPaid) {
-                        alert('Смена уже оплачена, нельзя изменить');
-                        return;
-                    }
-                    
-                    // ЦИКЛ ТИПОВ СМЕН
-                    const shiftCycle = [
-                        {type: 'regular', color: 'shift-regular'},
-                        {type: 'extra', color: 'shift-extra'},
-                        {type: 'dayoff', color: 'shift-dayoff'},
-                        {type: 'problem', color: 'shift-problem'},
-                        {type: 'done', color: 'shift-done'},
-                        {type: 'done-extra', color: 'shift-done-extra'},
-                        null
-                    ];
-                    
-                    // Находим текущую позицию
-                    let currentIndex = shiftCycle.findIndex(item => 
-                        item ? item.type === currentType : currentType === ''
-                    );
-                    if (currentIndex === -1) currentIndex = shiftCycle.length - 1;
-                    
-                    // Следующая позиция
-                    const nextIndex = (currentIndex + 1) % shiftCycle.length;
-                    const nextItem = shiftCycle[nextIndex];
-                    
-                    // Обновляем визуально
-                    marker.className = 'shift-marker';
-                    if (nextItem) {
-                        marker.classList.add(nextItem.color);
-                        marker.setAttribute('data-shift-type', nextItem.type);
-                        marker.setAttribute('data-done', 
-                            nextItem.type === 'done' || nextItem.type === 'done-extra' ? 'true' : 'false');
-                    } else {
-                        marker.setAttribute('data-shift-type', '');
-                        marker.setAttribute('data-done', 'false');
-                        marker.setAttribute('data-paid', 'false');
-                    }
-                    
-                    // Сохраняем в локальной карте
-                    if (!shiftsMap[selectedUserId]) shiftsMap[selectedUserId] = {};
-                    
-                    if (nextItem) {
-                        let type, done, paid;
-                        
-                        if (nextItem.type === 'regular') {
-                            type = 'regular'; done = false; paid = false;
-                        } else if (nextItem.type === 'extra') {
-                            type = 'extra'; done = false; paid = false;
-                        } else if (nextItem.type === 'dayoff') {
-                            type = 'dayoff'; done = false; paid = false;
-                        } else if (nextItem.type === 'problem') {
-                            type = 'problem'; done = false; paid = false;
-                        } else if (nextItem.type === 'done') {
-                            type = 'regular'; done = true; paid = false;
-                        } else if (nextItem.type === 'done-extra') {
-                            type = 'extra'; done = true; paid = false;
-                        }
-                        
-                        shiftsMap[selectedUserId][date] = { type, done, paid };
-                    } else {
-                        delete shiftsMap[selectedUserId][date];
-                    }
+            // Добавляем обработчики кликов на ячейки
+            tableBody.querySelectorAll('.shifts-cell').forEach(cell => {
+                cell.addEventListener('click', function(e) {
+                    handleShiftCellClick(this);
                 });
             });
         }
         
-        // === СОХРАНЕНИЕ СМЕН ===
-        app.safeAddEventListener('save-shifts-btn', 'click', async () => {
-            if (!selectedUserId) {
-                alert('Выберите охранника');
+        // === ОБРАБОТКА КЛИКА ПО ЯЧЕЙКЕ СМЕНЫ ===
+        function handleShiftCellClick(cell) {
+            const userId = cell.getAttribute('data-user-id');
+            const date = cell.getAttribute('data-date');
+            const currentType = cell.getAttribute('data-shift-type');
+            const isDone = cell.getAttribute('data-done') === 'true';
+            const isPaid = cell.getAttribute('data-paid') === 'true';
+            
+            if (isPaid) {
+                alert('Смена уже оплачена, нельзя изменить');
                 return;
             }
             
-            try {
-                const yearInput = app.getElement('selected-year');
-                const monthSelect = app.getElement('selected-month');
-                if (!yearInput || !monthSelect) return;
+            // ЦИКЛ ТИПОВ СМЕН
+            const shiftCycle = [
+                {type: 'regular', color: 'shift-regular', title: 'Обычная смена'},
+                {type: 'extra', color: 'shift-extra', title: 'Подработка'},
+                {type: 'dayoff', color: 'shift-dayoff', title: 'Выходной'},
+                {type: 'problem', color: 'shift-problem', title: 'Проблемная смена'},
+                {type: 'done', color: 'shift-done', title: 'Отработанная обычная'},
+                {type: 'done-extra', color: 'shift-done-extra', title: 'Отработанная подработка'},
+                null
+            ];
+            
+            // Находим текущую позицию
+            let currentIndex = shiftCycle.findIndex(item => 
+                item ? item.type === currentType : currentType === ''
+            );
+            if (currentIndex === -1) currentIndex = shiftCycle.length - 1;
+            
+            // Следующая позиция
+            const nextIndex = (currentIndex + 1) % shiftCycle.length;
+            const nextItem = shiftCycle[nextIndex];
+            
+            // Обновляем визуально
+            cell.className = 'shifts-cell';
+            if (nextItem) {
+                cell.classList.add(nextItem.color);
+                cell.setAttribute('data-shift-type', nextItem.type);
+                cell.setAttribute('data-done', 
+                    nextItem.type === 'done' || nextItem.type === 'done-extra' ? 'true' : 'false');
+                cell.setAttribute('title', nextItem.title);
+                cell.innerHTML = '';
+            } else {
+                cell.setAttribute('data-shift-type', '');
+                cell.setAttribute('data-done', 'false');
+                cell.setAttribute('data-paid', 'false');
+                cell.setAttribute('title', 'Нет смены (клик для добавления)');
+                cell.innerHTML = '+';
+            }
+            
+            // Сохраняем в локальной карте
+            if (!adminShiftsData[userId]) adminShiftsData[userId] = {};
+            
+            if (nextItem) {
+                let type, done, paid;
                 
-                const year = parseInt(yearInput.value) || 2024;
-                const month = parseInt(monthSelect.value) || 0;
+                if (nextItem.type === 'regular') {
+                    type = 'regular'; done = false; paid = false;
+                } else if (nextItem.type === 'extra') {
+                    type = 'extra'; done = false; paid = false;
+                } else if (nextItem.type === 'dayoff') {
+                    type = 'dayoff'; done = false; paid = false;
+                } else if (nextItem.type === 'problem') {
+                    type = 'problem'; done = false; paid = false;
+                } else if (nextItem.type === 'done') {
+                    type = 'regular'; done = true; paid = false;
+                } else if (nextItem.type === 'done-extra') {
+                    type = 'extra'; done = true; paid = false;
+                }
+                
+                adminShiftsData[userId][date] = { 
+                    type, 
+                    done, 
+                    paid,
+                    shiftId: adminShiftsData[userId][date]?.shiftId || null
+                };
+            } else {
+                delete adminShiftsData[userId][date];
+            }
+            
+            // Также обновляем shiftsMap для совместимости
+            if (!shiftsMap[userId]) shiftsMap[userId] = {};
+            if (nextItem) {
+                let type, done, paid;
+                
+                if (nextItem.type === 'regular') {
+                    type = 'regular'; done = false; paid = false;
+                } else if (nextItem.type === 'extra') {
+                    type = 'extra'; done = false; paid = false;
+                } else if (nextItem.type === 'dayoff') {
+                    type = 'dayoff'; done = false; paid = false;
+                } else if (nextItem.type === 'problem') {
+                    type = 'problem'; done = false; paid = false;
+                } else if (nextItem.type === 'done') {
+                    type = 'regular'; done = true; paid = false;
+                } else if (nextItem.type === 'done-extra') {
+                    type = 'extra'; done = true; paid = false;
+                }
+                
+                shiftsMap[userId][date] = { type, done, paid };
+            } else {
+                delete shiftsMap[userId][date];
+            }
+        }
+        
+        // === СОХРАНЕНИЕ ВСЕХ СМЕН АДМИНА ===
+        app.safeAddEventListener('save-all-shifts-btn', 'click', async () => {
+            try {
+                const month = parseInt(app.getElement('selected-month')?.value || currentMonth);
+                const year = parseInt(app.getElement('selected-year')?.value || currentYear);
                 const monthStr = String(month + 1).padStart(2, '0');
                 
-                // Удаляем старые смены за этот месяц
-                const oldShifts = await db.collection('shifts')
-                    .where('userId', '==', selectedUserId)
-                    .get();
-                
                 const batch = db.batch();
-                oldShifts.forEach(doc => {
-                    const data = doc.data();
-                    if (data.date.startsWith(`${year}-${monthStr}`)) {
-                        batch.delete(doc.ref);
-                    }
-                });
+                let changesCount = 0;
                 
-                // Добавляем новые смены
-                if (shiftsMap[selectedUserId]) {
-                    for (const [date, shift] of Object.entries(shiftsMap[selectedUserId])) {
+                // Для каждого пользователя
+                for (const userId in adminShiftsData) {
+                    const userShifts = adminShiftsData[userId];
+                    
+                    // Удаляем старые смены за этот месяц для этого пользователя
+                    const oldShifts = await db.collection('shifts')
+                        .where('userId', '==', userId)
+                        .where('date', '>=', `${year}-${monthStr}-01`)
+                        .where('date', '<=', `${year}-${monthStr}-31`)
+                        .get();
+                    
+                    oldShifts.forEach(doc => {
+                        batch.delete(doc.ref);
+                    });
+                    
+                    // Добавляем новые смены
+                    for (const [date, shift] of Object.entries(userShifts)) {
                         if (date.startsWith(`${year}-${monthStr}`)) {
                             const shiftRef = db.collection('shifts').doc();
                             batch.set(shiftRef, {
-                                userId: selectedUserId,
+                                userId: userId,
                                 date: date,
                                 type: shift.type,
                                 done: shift.done || false,
                                 paid: shift.paid || false,
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                             });
+                            changesCount++;
                         }
                     }
                 }
                 
                 await batch.commit();
-                alert('Смены сохранены!');
-                renderAdminCalendar();
+                alert(`Смены сохранены успешно! Изменено: ${changesCount} записей.`);
                 
             } catch (error) {
-                alert('Ошибка сохранения: ' + error.message);
+                alert('Ошибка сохранения смен: ' + error.message);
             }
         });
+        
+        // === ЗАГРУЗКА СМЕН ПО КНОПКЕ ===
+        app.safeAddEventListener('load-all-shifts-btn', 'click', async () => {
+            await loadAllShiftsForAdmin();
+        });
+        
+        // === ОБНОВЛЕНИЕ ТАБЛИЦЫ ПРИ ИЗМЕНЕНИИ МЕСЯЦА/ГОДА ===
+        app.safeAddEventListener('selected-month', 'change', async () => {
+            if (isAdmin && document.getElementById('tab-shifts-admin')?.classList.contains('active')) {
+                await loadAllShiftsForAdmin();
+            }
+        });
+        
+        app.safeAddEventListener('selected-year', 'change', async () => {
+            if (isAdmin && document.getElementById('tab-shifts-admin')?.classList.contains('active')) {
+                await loadAllShiftsForAdmin();
+            }
+        });
+        
+        // === ОСТАЛЬНЫЕ ФУНКЦИИ (постовая, выплаты и т.д.) ===
+        // ... (все остальные функции из предыдущей версии остаются без изменений,
+        // но с учетом нового формата Фамилия Имя)
         
         // === КАЛЕНДАРЬ ПОЛЬЗОВАТЕЛЯ ===
         function renderUserCalendar() {
@@ -1067,7 +1550,7 @@
             }
         }
         
-        // === ЗАГРУЗКА ПОСТОВ ПО ДАТЕ (АДМИН) ===
+        // === ЗАГРУЗКА ПОСТОВ ПО ДАТЕ ===
         app.safeAddEventListener('load-posts-btn', 'click', async function() {
             const dateInput = app.getElement('posts-date');
             if (!dateInput || !dateInput.value) {
@@ -1087,44 +1570,7 @@
             
             if (!confirm(`Создать шаблон постов для даты ${dateInput.value}?`)) return;
             
-            try {
-                // Удаляем старые посты на эту дату
-                const oldPosts = await db.collection('posts')
-                    .where('date', '==', dateInput.value)
-                    .get();
-                
-                const batch = db.batch();
-                oldPosts.forEach(doc => {
-                    batch.delete(doc.ref);
-                });
-                
-                // Добавляем новые посты из шаблона в ТОЧНОМ ПОРЯДКЕ
-                for (let i = 0; i < defaultPosts.length; i++) {
-                    const post = defaultPosts[i];
-                    const postRef = db.collection('posts').doc();
-                    
-                    // Сохраняем порядковый номер как строку (1, 2, 3.1, 4...)
-                    const order = i + 1; // Внутренний порядок для сортировки
-                    
-                    batch.set(postRef, {
-                        date: dateInput.value,
-                        number: post.number, // Номер поста (1, 2, 3.1, 4...)
-                        post: post.post,
-                        guardId: '',
-                        guardName: '',
-                        time: post.time,
-                        order: order, // Внутренний порядковый номер для сортировки
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-                
-                await batch.commit();
-                alert('Шаблон постов создан в правильном порядке!');
-                await loadPostsForDate(dateInput.value, true);
-                
-            } catch (error) {
-                alert('Ошибка создания шаблона: ' + error.message);
-            }
+            await createPostsFromTemplate(dateInput.value);
         });
         
         async function loadPostsForDate(date, isAdminView = false) {
@@ -1135,14 +1581,29 @@
                 
                 postsData = [];
                 snapshot.forEach(doc => {
-                    postsData.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    // Форматируем имя охранника: Фамилия Имя
+                    let guardDisplayName = data.guardName || '';
+                    if (guardDisplayName) {
+                        const nameParts = guardDisplayName.split(' ');
+                        if (nameParts.length >= 2) {
+                            // Меняем порядок: Фамилия Имя
+                            guardDisplayName = `${nameParts[0]} ${nameParts.slice(1).join(' ')}`;
+                        }
+                    }
+                    
+                    postsData.push({ 
+                        id: doc.id, 
+                        ...data,
+                        guardDisplayName: guardDisplayName
+                    });
                 });
                 
-                // СОРТИРУЕМ ПО ПОЛЮ order (если есть), иначе по времени
+                // СОРТИРУЕМ ПО ПОЛЮ order
                 postsData.sort((a, b) => {
-                    const orderA = a.order || 999; // Если нет order, ставим в конец
+                    const orderA = a.order || 999;
                     const orderB = b.order || 999;
-                    return orderA - orderB; // Сортировка по порядку
+                    return orderA - orderB;
                 });
                 
                 if (isAdminView) {
@@ -1211,7 +1672,7 @@
                             <input type="time" value="${post.time || '08:00'}" class="time-input">
                         </td>
                         <td>
-                            ${renderUserSelect(post.guardId, true)}
+                            ${renderUserSelectForPosts(post.guardId)}
                         </td>
                         <td class="post-controls">
                             <button class="btn-success save-post-btn btn-small"><i class="fas fa-save"></i></button>
@@ -1257,21 +1718,60 @@
             });
         }
         
-        function renderUserSelect(selectedId = '', isAdmin = false) {
-            let html = `<select class="guard-select" style="width: 100%;" ${!isAdmin ? 'disabled' : ''}>`;
+        function renderUserSelectForPosts(selectedId = '') {
+            let html = `<select class="guard-select" style="width: 100%;">`;
             html += `<option value="">Не назначен</option>`;
             allUsers.forEach(user => {
                 if (user.role !== 'admin') {
-                    html += `<option value="${user.id}" ${user.id === selectedId ? 'selected' : ''}>${user.fullName || user.email}</option>`;
+                    html += `<option value="${user.id}" ${user.id === selectedId ? 'selected' : ''}>${user.displayName}</option>`;
                 }
             });
             html += `</select>`;
             return html;
         }
         
+        async function createPostsFromTemplate(date) {
+            try {
+                // Удаляем старые посты на эту дату
+                const oldPosts = await db.collection('posts')
+                    .where('date', '==', date)
+                    .get();
+                
+                const batch = db.batch();
+                oldPosts.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                
+                // Добавляем новые посты из шаблона в ТОЧНОМ ПОРЯДКЕ
+                for (let i = 0; i < defaultPosts.length; i++) {
+                    const post = defaultPosts[i];
+                    const postRef = db.collection('posts').doc();
+                    
+                    const order = i + 1;
+                    
+                    batch.set(postRef, {
+                        date: date,
+                        number: post.number,
+                        post: post.post,
+                        guardId: '',
+                        guardName: '',
+                        time: post.time,
+                        order: order,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+                
+                await batch.commit();
+                alert('Шаблон постов создан в правильном порядке!');
+                await loadPostsForDate(date, true);
+                
+            } catch (error) {
+                alert('Ошибка создания шаблона: ' + error.message);
+            }
+        }
+        
         async function addNewPostRowToTable(date) {
             try {
-                // Находим максимальный order для этой даты
                 let maxOrder = 0;
                 postsData.forEach(post => {
                     if (post.order !== undefined && post.order > maxOrder) {
@@ -1286,7 +1786,7 @@
                     guardId: '',
                     guardName: '',
                     time: '08:00',
-                    order: maxOrder + 1, // ДОБАВЛЯЕМ ПОРЯДОК
+                    order: maxOrder + 1,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
@@ -1316,9 +1816,13 @@
             }
             
             const guard = allUsers.find(u => u.id === guardId);
-            const guardName = guard ? guard.fullName : '';
+            let guardName = guard ? guard.displayName : '';
             
-            // Сохраняем существующий order
+            // Форматируем для хранения: Фамилия Имя
+            if (guard && guard.lastName && guard.firstName) {
+                guardName = `${guard.lastName} ${guard.firstName}`;
+            }
+            
             const existingPost = postsData.find(p => p.id === postId);
             const order = existingPost ? existingPost.order : (postsData.length + 1);
             
@@ -1329,7 +1833,7 @@
                     guardId: guardId,
                     guardName: guardName,
                     time: time,
-                    order: order, // Сохраняем существующий порядок
+                    order: order,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
@@ -1364,9 +1868,13 @@
                 }
                 
                 const guard = allUsers.find(u => u.id === guardId);
-                const guardName = guard ? guard.fullName : '';
+                let guardName = guard ? guard.displayName : '';
                 
-                // Сохраняем существующий order
+                // Форматируем для хранения: Фамилия Имя
+                if (guard && guard.lastName && guard.firstName) {
+                    guardName = `${guard.lastName} ${guard.firstName}`;
+                }
+                
                 const existingPost = postsData.find(p => p.id === postId);
                 const order = existingPost ? existingPost.order : (postsData.length + 1);
                 
@@ -1393,44 +1901,17 @@
             }
         }
         
-        async function createPostsFromTemplate(date) {
+        async function deletePostRow(row, date) {
+            const postId = row.getAttribute('data-id');
+            if (!postId) return;
+            
+            if (!confirm('Удалить этот пост?')) return;
+            
             try {
-                // Удаляем старые посты на эту дату
-                const oldPosts = await db.collection('posts')
-                    .where('date', '==', date)
-                    .get();
-                
-                const batch = db.batch();
-                oldPosts.forEach(doc => {
-                    batch.delete(doc.ref);
-                });
-                
-                // Добавляем новые посты из шаблона в ТОЧНОМ ПОРЯДКЕ
-                for (let i = 0; i < defaultPosts.length; i++) {
-                    const post = defaultPosts[i];
-                    const postRef = db.collection('posts').doc();
-                    
-                    // Сохраняем порядковый номер как строку (1, 2, 3.1, 4...)
-                    const order = i + 1; // Внутренний порядок для сортировки
-                    
-                    batch.set(postRef, {
-                        date: date,
-                        number: post.number, // Номер поста (1, 2, 3.1, 4...)
-                        post: post.post,
-                        guardId: '',
-                        guardName: '',
-                        time: post.time,
-                        order: order, // Внутренний порядковый номер для сортировки
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-                
-                await batch.commit();
-                alert('Шаблон постов создан в правильном порядке!');
+                await db.collection('posts').doc(postId).delete();
                 await loadPostsForDate(date, true);
-                
             } catch (error) {
-                alert('Ошибка создания шаблона: ' + error.message);
+                alert('Ошибка удаления: ' + error.message);
             }
         }
         
@@ -1482,7 +1963,7 @@
                         <td>${post.number || ''}</td>
                         <td>${post.post || ''}</td>
                         <td>${post.time || ''}</td>
-                        <td>${post.guardName || 'Не назначен'}</td>
+                        <td>${post.guardDisplayName || post.guardName || 'Не назначен'}</td>
                     </tr>
                 `;
             });
@@ -1569,7 +2050,14 @@
             const userRate = app.getElement('user-rate');
             const userEmail = app.getElement('user-email');
             
-            if (userName) userName.textContent = user.fullName || 'Имя не указано';
+            if (userName) {
+                // Форматируем имя для отображения: Фамилия Имя
+                if (user.lastName && user.firstName) {
+                    userName.textContent = `${user.lastName} ${user.firstName}`;
+                } else {
+                    userName.textContent = user.fullName || user.email || 'Имя не указано';
+                }
+            }
             if (userPosition) userPosition.textContent = user.role === 'admin' ? 'Администратор' : 'Охранник';
             if (userRate) userRate.textContent = `${rate} ₽`;
             if (userEmail) userEmail.textContent = user.email;
@@ -1648,7 +2136,7 @@
                 const paymentRef = db.collection('salary_payments').doc();
                 await paymentRef.set({
                     userId: userId,
-                    userName: user.fullName || user.email,
+                    userName: user.displayName || user.email,
                     periodFrom: fromDate,
                     periodTo: toDate,
                     regularShifts: regularCount,
@@ -1666,10 +2154,7 @@
                 await batch.commit();
                 
                 // Обновляем данные
-                await loadShiftsForUser(userId);
-                if (userId === selectedUserId) {
-                    renderAdminCalendar();
-                }
+                await loadUsers();
                 if (userId === currentUser?.uid) {
                     updateUserStats();
                     loadPaymentHistory(userId);
@@ -1685,7 +2170,7 @@
                     resultDiv.innerHTML = `
                         <div class="success">
                             <strong>Выплата создана!</strong><br>
-                            Охранник: ${user.fullName || user.email}<br>
+                            Охранник: ${user.displayName || user.email}<br>
                             Период: ${fromDate} - ${toDate}<br>
                             Обычных: ${regularCount} × ${rate} ₽ = ${regularCount * rate} ₽<br>
                             Подработок: ${extraCount} × ${rate + 100} ₽ = ${extraCount * (rate + 100)} ₽<br>
@@ -1781,11 +2266,19 @@
             
             if (monthSelect) {
                 monthSelect.value = currentMonth;
-                monthSelect.addEventListener('change', renderAdminCalendar);
+                monthSelect.addEventListener('change', async () => {
+                    if (isAdmin && document.getElementById('tab-shifts-admin')?.classList.contains('active')) {
+                        await loadAllShiftsForAdmin();
+                    }
+                });
             }
             if (yearInput) {
                 yearInput.value = currentYear;
-                yearInput.addEventListener('change', renderAdminCalendar);
+                yearInput.addEventListener('change', async () => {
+                    if (isAdmin && document.getElementById('tab-shifts-admin')?.classList.contains('active')) {
+                        await loadAllShiftsForAdmin();
+                    }
+                });
             }
             
             // Начальные даты для периода
@@ -1822,7 +2315,10 @@
                 
                 if (isAdmin) {
                     app.showSection('admin-section');
+                    // Загружаем смены для админа
+                    await loadAllShiftsForAdmin();
                 } else {
+                    // Загружаем смены для пользователя
                     await loadShiftsForUser(user.uid);
                     updateUserStats();
                     renderUserCalendar();
@@ -1837,6 +2333,27 @@
                 app.updateNavigation();
             }
         });
+        
+        // Функция загрузки смен для пользователя
+        async function loadShiftsForUser(userId) {
+            try {
+                const snapshot = await db.collection('shifts')
+                    .where('userId', '==', userId)
+                    .get();
+                
+                shiftsMap[userId] = {};
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    shiftsMap[userId][data.date] = {
+                        type: data.type,
+                        done: data.done || false,
+                        paid: data.paid || false
+                    };
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки смен:', error);
+            }
+        }
         
         // ЗАПУСК
         document.addEventListener('DOMContentLoaded', init);

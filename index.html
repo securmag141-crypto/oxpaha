@@ -797,6 +797,7 @@
                     <div style="flex: 2; display: flex; align-items: flex-end;">
                         <button id="load-all-shifts-btn" class="btn-success"><i class="fas fa-sync-alt"></i> Загрузить смены</button>
                         <button id="save-all-shifts-btn" style="margin-left: 10px;"><i class="fas fa-save"></i> Сохранить все</button>
+                        <button id="mark-done-past" class="btn-secondary" style="margin-left: 10px;"><i class="fas fa-check-double"></i> Отметить прошедшие
                     </div>
                 </div>
                 
@@ -1614,7 +1615,52 @@
                 alert('Ошибка сохранения смен: ' + error.message);
             }
         });
+        // === ОТМЕТИТЬ ПРОШЕДШИЕ СМЕНЫ КАК ОТРАБОТАННЫЕ ===
+        app.safeAddEventListener('mark-done-past', 'click', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toISOString().split('T')[0];
+    
+            const batch = db.batch();
+            let updatedRegular = 0;
+            let updatedExtra = 0;
+    
+            try {
+        // Найти ВСЕ смены до вчера, которые не оплачены
+                const snapshot = await db.collection('shifts')
+                    .where('date', '<=', yesterdayStr)
+                    .where('paid', '==', false)
+                    .get();
         
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+            // Пропускаем если уже отработана
+                    if (data.done === true) return;
+            // Пропускаем выходные и проблемные смены
+                    if (data.type !== 'regular' && data.type !== 'extra') return;
+            
+                    batch.update(doc.ref, {
+                        done: true,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+            
+                    if (data.type === 'regular') updatedRegular++;
+                    if (data.type === 'extra') updatedExtra++;
+                });
+        
+                await batch.commit();
+                alert(`Отмечено: ${updatedRegular} основных, ${updatedExtra} подработок (до ${yesterdayStr})`);
+        
+                if (isAdmin && document.getElementById('tab-shifts-admin')?.classList.contains('active')) {
+                    await loadAllShiftsForAdmin();
+                }
+        
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        });
         // === ЗАГРУЗКА СМЕН ПО КНОПКЕ ===
         app.safeAddEventListener('load-all-shifts-btn', 'click', async () => {
             await loadAllShiftsForAdmin();

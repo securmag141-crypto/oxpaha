@@ -799,6 +799,49 @@
                         <button id="save-all-shifts-btn" style="margin-left: 10px;"><i class="fas fa-save"></i> Сохранить все</button>
                         <button id="mark-done-past" class="btn-secondary" style="margin-left: 10px;"><i class="fas fa-check-double"></i> Отметить прошедшие
                     </div>
+                 </div>
+                    <!-- CSV ИМПОРТ -->
+                    <div class="csv-import" style="margin-top: 1.5rem; padding: 1rem; background: #0a192f; border-radius: 8px; border: 1px solid #233554;">
+                        <h3 style="color: #64ffda; margin-bottom: 1rem; border-bottom: 1px solid #233554; padding-bottom: 0.5rem;">
+                            <i class="fas fa-file-csv"></i> Импорт CSV
+                        </h3>
+                        <div class="flex">
+                            <div class="form-group" style="flex: 1;">
+                                <label>Месяц:</label>
+                                <select id="csv-month">
+                                    <option value="0">Январь</option>
+                                    <option value="1">Февраль</option>
+                                    <option value="2">Март</option>
+                                    <option value="3">Апрель</option>
+                                    <option value="4">Май</option>
+                                    <option value="5">Июнь</option>
+                                    <option value="6">Июль</option>
+                                    <option value="7">Август</option>
+                                    <option value="8">Сентябрь</option>
+                                    <option value="9">Октябрь</option>
+                                    <option value="10">Ноябрь</option>
+                                    <option value="11">Декабрь</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Год:</label>
+                                <input type="number" id="csv-year" value="2024" style="width: 120px;">
+                            </div>
+                            <div class="form-group" style="flex: 2;">
+                                <label>CSV файл (формат: "Сотрудник,1,2,3..."):</label>
+                                <input type="file" id="csv-file" accept=".csv">
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem; display: flex; gap: 10px;">
+                            <button id="import-csv-btn" class="btn-success">
+                                <i class="fas fa-upload"></i> Импортировать CSV
+                            </button>
+                            <button id="download-template-btn" class="btn-secondary">
+                                <i class="fas fa-download"></i> Скачать шаблон
+                            </button>
+                        </div>
+                        <div id="csv-result" class="message hidden" style="margin-top: 1rem;"></div>
+                    </div>
                 </div>
                 
                 <!-- ЦВЕТА СМЕН -->
@@ -1660,6 +1703,228 @@
             } catch (error) {
                 alert('Ошибка: ' + error.message);
             }
+        });
+        // === CSV ИМПОРТ ===
+        app.safeAddEventListener('import-csv-btn', 'click', async function() {
+            const fileInput = app.getElement('csv-file');
+            const month = parseInt(app.getElement('csv-month').value);
+            const year = parseInt(app.getElement('csv-year').value);
+            const resultDiv = app.getElement('csv-result');
+    
+            if (!fileInput.files[0]) {
+                alert('Выберите CSV файл');
+                return;
+            }
+    
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+    
+            reader.onload = async function(e) {
+                try {
+                    const text = e.target.result;
+                    const result = await processCSV(text, month, year);
+            
+            // Показываем результат
+                    if (resultDiv) {
+                        resultDiv.innerHTML = `
+                            <div class="success">
+                                <strong>Импорт завершен!</strong><br>
+                                Обработано сотрудников: ${result.employeesProcessed}<br>
+                                Создано смен: ${result.shiftsCreated}<br>
+                                Основных (*): ${result.regularShifts}, Подработок (#): ${result.extraShifts}<br>
+                                ${result.notFoundNames.length > 0 ? 'Не найдено: ' + result.notFoundNames.join(', ') : ''}
+                            </div>
+                        `;
+                        resultDiv.classList.remove('hidden');
+                    }
+            
+            // Обновляем таблицу
+                    if (isAdmin && document.getElementById('tab-shifts-admin')?.classList.contains('active')) {
+                        await loadAllShiftsForAdmin();
+                    }
+            
+                } catch (error) {
+                    alert('Ошибка импорта: ' + error.message);
+                    if (resultDiv) {
+                        resultDiv.innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
+                        resultDiv.classList.remove('hidden');
+                    }
+                }
+            };
+    
+            reader.readAsText(file, 'UTF-8');
+        });
+
+        async function processCSV(csvText, month, year) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            if (lines.length < 2) {
+                throw new Error('CSV файл пустой или имеет неправильный формат');
+            }
+    
+    // Читаем заголовки (дни месяца)
+            const headers = lines[0].split(',').map(h => h.trim());
+            if (headers[0] !== 'Сотрудник') {
+                throw new Error('Первая колонка должна называться "Сотрудник"');
+            }
+    
+            const batch = db.batch();
+            const result = {
+                employeesProcessed: 0,
+                shiftsCreated: 0,
+                regularShifts: 0,
+                extraShifts: 0,
+                notFoundNames: []
+            };
+    
+    // Обрабатываем каждую строку (начиная со второй)
+            for (let i = 1; i < lines.length; i++) {
+                const cells = lines[i].split(',').map(c => c.trim());
+                const employeeName = cells[0];
+        
+                if (!employeeName) continue;
+        
+        // Ищем сотрудника в системе
+                const employee = findEmployeeByName(employeeName);
+        
+                if (!employee) {
+                    result.notFoundNames.push(employeeName);
+                    continue;
+                }
+        
+                result.employeesProcessed++;
+        
+        // Обрабатываем дни (колонки 1..31)
+                for (let day = 1; day <= 31; day++) {
+                    if (day >= cells.length) break;
+            
+                    const symbol = cells[day];
+                    let shiftType = null;
+            
+            // Определяем тип смены по символу
+                    if (symbol === '*') {
+                        shiftType = 'regular';
+                        result.regularShifts++;
+                    } else if (symbol === '#') {
+                        shiftType = 'extra';
+                        result.extraShifts++;
+                    } else {
+                        continue; // Пропускаем пустые или другие символы
+                    }
+            
+            // Формируем дату
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            // Создаем или обновляем смену
+                    const shiftRef = db.collection('shifts').doc();
+                    batch.set(shiftRef, {
+                        userId: employee.id,
+                        date: dateStr,
+                        type: shiftType,
+                        done: false,
+                        paid: false,
+                        imported: true,
+                        importedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+            
+                    result.shiftsCreated++;
+                }
+            }
+    
+    // Сохраняем все изменения
+            if (result.shiftsCreated > 0) {
+                await batch.commit();
+            }
+    
+            return result;
+        }
+
+        function findEmployeeByName(name) {
+            const searchName = name.toLowerCase().trim();
+    
+            return allUsers.find(user => {
+                if (user.role === 'admin') return false;
+        
+        // Проверяем разные варианты имени
+                const displayName = (user.displayName || '').toLowerCase();
+                const fullName = (user.fullName || '').toLowerCase();
+                const lastName = (user.lastName || '').toLowerCase();
+                const firstName = (user.firstName || '').toLowerCase();
+        
+        // Ищем совпадение в любом формате
+                if (displayName === searchName || fullName === searchName) {
+                    return true;
+                }
+        
+        // Ищем частичное совпадение
+                if (displayName.includes(searchName) || searchName.includes(displayName)) {
+                    return true;
+                }
+        
+        // Проверяем формат "Фамилия Имя"
+                const fullNameReverse = `${firstName} ${lastName}`.toLowerCase();
+                if (fullNameReverse === searchName || searchName.includes(fullNameReverse)) {
+                    return true;
+                }
+        
+                return false;
+            });
+        }
+
+// === СКАЧАТЬ ШАБЛОН CSV ===
+        app.safeAddEventListener('download-template-btn', 'click', function() {
+            const month = parseInt(app.getElement('csv-month').value);
+            const year = parseInt(app.getElement('csv-year').value);
+    
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                               'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    
+    // Создаем заголовки
+            let csvContent = 'Сотрудник';
+            for (let day = 1; day <= 31; day++) {
+                csvContent += `,${day}`;
+            }
+            csvContent += '\n';
+    
+    // Добавляем реальных сотрудников
+            const employees = allUsers.filter(u => u.role !== 'admin');
+    
+            if (employees.length > 0) {
+                employees.forEach(employee => {
+                    const name = employee.displayName || employee.fullName || `${employee.lastName} ${employee.firstName}`;
+                    csvContent += name;
+            
+                    for (let day = 1; day <= 31; day++) {
+                // Оставляем пустые ячейки для заполнения
+                        csvContent += ', ';
+                    }
+                    csvContent += '\n';
+                });
+            } else {
+        // Пример если нет сотрудников
+                csvContent += 'Иван Иванов';
+                for (let day = 1; day <= 31; day++) {
+                    csvContent += ', ';
+                }
+                csvContent += '\nПетр Петров';
+                for (let day = 1; day <= 31; day++) {
+                    csvContent += ', ';
+                }
+                csvContent += '\n';
+            }
+    
+    // Создаем и скачиваем файл
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+    
+            link.setAttribute('href', url);
+            link.setAttribute('download', `смены_${monthNames[month]}_${year}.csv`);
+            link.style.visibility = 'hidden';
+    
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         });
         // === ЗАГРУЗКА СМЕН ПО КНОПКЕ ===
         app.safeAddEventListener('load-all-shifts-btn', 'click', async () => {
@@ -2584,6 +2849,8 @@
             app.getElement('selected-year').value = currentYear;
             app.getElement('user-selected-month').value = currentMonth;
             app.getElement('user-selected-year').value = currentYear;
+            app.getElement('csv-month').value = currentMonth;
+            app.getElement('csv-year').value = currentYear;
             
             const periodFrom = app.getElement('period-from-admin');
             const periodTo = app.getElement('period-to-admin');

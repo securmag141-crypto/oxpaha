@@ -1631,10 +1631,6 @@
         });
         
         // === КАЛЕНДАРЬ ПОЛЬЗОВАТЕЛЯ ===
-        async function loadUserAllShiftsOnLogin() {
-    if (!currentUser) return;
-    try {
-        // Загружаем смены за последние 6 месяцев
 async function loadUserAllShiftsOnLogin() {
     if (!currentUser) return;
     try {
@@ -2573,7 +2569,7 @@ async function loadUserShiftsForMonth() {
                     await loadAllShiftsForAdmin();
                     loadPaymentsArchive();
                 } else {
-                    await loadUserAllShiftsOnLogin();
+                    wait loadUserAllShiftsOnLogin();
                     updateUserStats();
                     loadUserPaymentHistory();
                     app.showSection('user-section');

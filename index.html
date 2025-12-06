@@ -1635,17 +1635,18 @@
     if (!currentUser) return;
     try {
         // Загружаем смены за последние 6 месяцев
+async function loadUserAllShiftsOnLogin() {
+    if (!currentUser) return;
+    try {
+        // Загружаем смены на 3 месяца: прошлый, текущий, следующий
         const now = new Date();
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(now.getMonth() - 6);
-        
-        const startDate = sixMonthsAgo.toISOString().split('T')[0];
-        const endDate = now.toISOString().split('T')[0];
+        const startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1); // прошлый месяц
+        const endDate = new Date(now.getFullYear(), now.getMonth() + 2, 0);   // конец след месяца
         
         const snapshot = await db.collection('shifts')
             .where('userId', '==', currentUser.uid)
-            .where('date', '>=', startDate)
-            .where('date', '<=', endDate)
+            .where('date', '>=', startDate.toISOString().split('T')[0])
+            .where('date', '<=', endDate.toISOString().split('T')[0])
             .get();
         
         if (!shiftsMap[currentUser.uid]) shiftsMap[currentUser.uid] = {};
@@ -1659,7 +1660,7 @@
             };
         });
         
-        // Обновляем календарь текущего месяца
+        // Обновляем календарь ТЕКУЩЕГО месяца
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
         renderUserCalendar(currentMonth, currentYear);
@@ -1668,44 +1669,49 @@
         console.error('Ошибка загрузки всех смен:', error);
     }
 }
-        async function loadUserShiftsForMonth() {
-            if (!currentUser) return;
-            try {
-                const month = parseInt(app.getElement('user-selected-month')?.value || userViewMonth);
-                const year = parseInt(app.getElement('user-selected-year')?.value || userViewYear);
-                const firstDay = new Date(year, month, 1);
-                const lastDay = new Date(year, month + 1, 0);
-                const startDate = firstDay.toISOString().split('T')[0];
-                const endDate = lastDay.toISOString().split('T')[0];
-                
-                const snapshot = await db.collection('shifts')
-                    .where('userId', '==', currentUser.uid)
-                    .where('date', '>=', startDate)
-                    .where('date', '<=', endDate)
-                    .get();
-                
-                if (!shiftsMap[currentUser.uid]) shiftsMap[currentUser.uid] = {};
-                Object.keys(shiftsMap[currentUser.uid]).forEach(date => {
-                    if (date >= startDate && date <= endDate) delete shiftsMap[currentUser.uid][date];
-                });
-                
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    shiftsMap[currentUser.uid][data.date] = {
-                        type: data.type,
-                        done: data.done || false,
-                        paid: data.paid || false
-                    };
-                });
-                
-                renderUserCalendar(month, year);
-                updateUserStats();
-                
-            } catch (error) {
-                console.error('Ошибка загрузки смен:', error);
-                alert('Ошибка загрузки смен: ' + error.message);
+async function loadUserShiftsForMonth() {
+    if (!currentUser) return;
+    try {
+        const month = parseInt(app.getElement('user-selected-month')?.value || userViewMonth);
+        const year = parseInt(app.getElement('user-selected-year')?.value || userViewYear);
+        
+        // Загружаем смены на 3 месяца для полноты
+        const startDate = new Date(year, month - 1, 1); // прошлый месяц
+        const endDate = new Date(year, month + 1, 0);   // конец след месяца
+        
+        const snapshot = await db.collection('shifts')
+            .where('userId', '==', currentUser.uid)
+            .where('date', '>=', startDate.toISOString().split('T')[0])
+            .where('date', '<=', endDate.toISOString().split('T')[0])
+            .get();
+        
+        if (!shiftsMap[currentUser.uid]) shiftsMap[currentUser.uid] = {};
+        
+        // Очищаем только диапазон 3 месяцев, а не все
+        Object.keys(shiftsMap[currentUser.uid]).forEach(date => {
+            if (date >= startDate.toISOString().split('T')[0] && 
+                date <= endDate.toISOString().split('T')[0]) {
+                delete shiftsMap[currentUser.uid][date];
             }
-        }
+        });
+        
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            shiftsMap[currentUser.uid][data.date] = {
+                type: data.type,
+                done: data.done || false,
+                paid: data.paid || false
+            };
+        });
+        
+        renderUserCalendar(month, year);
+        updateUserStats();
+        
+    } catch (error) {
+        console.error('Ошибка загрузки смен:', error);
+        alert('Ошибка загрузки смен: ' + error.message);
+    }
+}
         
         function renderUserCalendar(month, year) {
             const container = app.getElement('user-calendar');

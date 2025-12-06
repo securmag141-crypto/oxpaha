@@ -1628,18 +1628,18 @@
             let updatedExtra = 0;
     
             try {
-        // Найти ВСЕ смены до вчера, которые не оплачены
+        // 1. Получить ВСЕ смены до вчера
                 const snapshot = await db.collection('shifts')
                     .where('date', '<=', yesterdayStr)
-                    .where('paid', '==', false)
                     .get();
         
                 snapshot.forEach(doc => {
                     const data = doc.data();
-            // Пропускаем если уже отработана
-                    if (data.done === true) return;
-            // Пропускаем выходные и проблемные смены
-                    if (data.type !== 'regular' && data.type !== 'extra') return;
+            
+            // Фильтруем вручную в коде:
+                    if (data.paid === true) return;      // Пропускаем оплаченные
+                    if (data.done === true) return;      // Пропускаем уже отработанные
+                    if (data.type !== 'regular' && data.type !== 'extra') return; // Только основные/подработки
             
                     batch.update(doc.ref, {
                         done: true,

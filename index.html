@@ -1631,6 +1631,43 @@
         });
         
         // === КАЛЕНДАРЬ ПОЛЬЗОВАТЕЛЯ ===
+        async function loadUserAllShiftsOnLogin() {
+    if (!currentUser) return;
+    try {
+        // Загружаем смены за последние 6 месяцев
+        const now = new Date();
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(now.getMonth() - 6);
+        
+        const startDate = sixMonthsAgo.toISOString().split('T')[0];
+        const endDate = now.toISOString().split('T')[0];
+        
+        const snapshot = await db.collection('shifts')
+            .where('userId', '==', currentUser.uid)
+            .where('date', '>=', startDate)
+            .where('date', '<=', endDate)
+            .get();
+        
+        if (!shiftsMap[currentUser.uid]) shiftsMap[currentUser.uid] = {};
+        
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            shiftsMap[currentUser.uid][data.date] = {
+                type: data.type,
+                done: data.done || false,
+                paid: data.paid || false
+            };
+        });
+        
+        // Обновляем календарь текущего месяца
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        renderUserCalendar(currentMonth, currentYear);
+        
+    } catch (error) {
+        console.error('Ошибка загрузки всех смен:', error);
+    }
+}
         async function loadUserShiftsForMonth() {
             if (!currentUser) return;
             try {
@@ -2530,7 +2567,7 @@
                     await loadAllShiftsForAdmin();
                     loadPaymentsArchive();
                 } else {
-                    await loadUserShiftsForMonth();
+                    await loadUserAllShiftsOnLogin();
                     updateUserStats();
                     loadUserPaymentHistory();
                     app.showSection('user-section');

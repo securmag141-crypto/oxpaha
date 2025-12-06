@@ -1467,7 +1467,12 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             
             let daysHtml = '';
-            for (let day = 1; day <= daysInMonth; day++) {
+            for (let day = 1; day <= 32; day++) {
+                if (day > daysInMonth) {
+        // Пустая ячейка для 32-го дня (если дней в месяце меньше)
+                    daysHtml += `<th style="color: #8892b0;"><br><small style="font-size: 0.7rem; color: #8892b0;"></small></th>`;
+                    continue;
+                }
                 const date = new Date(year, month, day);
                 const dayOfWeek = date.getDay();
                 const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Ср'];

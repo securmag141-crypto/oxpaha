@@ -1767,7 +1767,8 @@
             }
     
     // Читаем заголовки (дни месяца)
-            const headers = lines[0].split(',').map(h => h.trim());
+            const delimiter = lines[0].includes(';') ? ';' : ',';
+            const headers = lines[0].split(delimiter).map(h => h.trim());
             if (headers[0] !== 'Сотрудник' && headers[0] !== 'Sotrudnik') {
                 throw new Error('Первая колонка должна называться "Сотрудник" или "Sotrudnik"');
             }
@@ -1783,7 +1784,7 @@
     
     // Обрабатываем каждую строку (начиная со второй)
             for (let i = 1; i < lines.length; i++) {
-                const cells = lines[i].split(',').map(c => c.trim());
+                const cells = lines[i].split(delimiter).map(c => c.trim());
                 const employeeName = cells[0];
         
                 if (!employeeName) continue;

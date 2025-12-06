@@ -1768,8 +1768,8 @@
     
     // Читаем заголовки (дни месяца)
             const headers = lines[0].split(',').map(h => h.trim());
-            if (headers[0] !== 'Сотрудник') {
-                throw new Error('Первая колонка должна называться "Сотрудник"');
+            if (headers[0] !== 'Сотрудник' && headers[0] !== 'Sotrudnik') {
+                throw new Error('Первая колонка должна называться "Сотрудник" или "Sotrudnik"');
             }
     
             const batch = db.batch();

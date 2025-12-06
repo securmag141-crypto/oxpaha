@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный Кабинет Охранника</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Календарь смен</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -93,10 +93,12 @@
         .stat-card { background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center; }
         .stat-value { font-size: 1.8rem; font-weight: bold; }
         
-        /* TABLES */
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
-        th, td { padding: 0.8rem; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; font-weight: 600; }
+        /* POSTS TABLE */
+        .posts-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+        .posts-table th, .posts-table td { padding: 0.8rem; text-align: left; border-bottom: 1px solid #eee; }
+        .posts-table th { background: #f8f9fa; font-weight: 600; }
+        .posts-table .post-controls { display: flex; gap: 0.5rem; }
+        .post-row input, .post-row select { padding: 0.4rem; font-size: 0.85rem; }
         .table-responsive { overflow-x: auto; }
         
         /* UTILS */
@@ -179,9 +181,9 @@
                 <div style="flex: 1;">
                     <h1><i class="fas fa-user-cog"></i> Админ-панель</h1>
                     
-                    <h2><i class="fas fa-user-plus"></i> Новый сотрудник</h2>
+                    <h2><i class="fas fa-user-plus"></i> Новый охранник</h2>
                     <div class="form-group">
-                        <input type="email" id="new-user-email" placeholder="Email сотрудника">
+                        <input type="email" id="new-user-email" placeholder="Email охранника">
                     </div>
                     <div class="form-group">
                         <input type="password" id="new-user-password" placeholder="Пароль">
@@ -192,9 +194,9 @@
                     <div class="form-group">
                         <input type="number" id="new-user-rate" placeholder="Ставка за смену" value="1500">
                     </div>
-                    <button id="create-user-btn"><i class="fas fa-plus"></i> Создать сотрудника</button>
+                    <button id="create-user-btn"><i class="fas fa-plus"></i> Создать охранника</button>
                     
-                    <h2><i class="fas fa-users"></i> Все сотрудники</h2>
+                    <h2><i class="fas fa-users"></i> Все охранники</h2>
                     <div id="users-container" class="user-list"></div>
                 </div>
                 
@@ -204,7 +206,7 @@
                     
                     <div class="calendar-controls">
                         <div class="form-group" style="flex: 1;">
-                            <label>Сотрудник:</label>
+                            <label>Охранник:</label>
                             <select id="selected-user"></select>
                         </div>
                         <div class="form-group" style="flex: 1;">
@@ -247,7 +249,7 @@
                     <h2 style="margin-top: 2rem;"><i class="fas fa-money-bill-wave"></i> Управление выплатами</h2>
                     <div class="flex">
                         <div class="form-group" style="flex: 1;">
-                            <label>Сотрудник:</label>
+                            <label>Охранник:</label>
                             <select id="payment-user"></select>
                         </div>
                         <div class="form-group" style="flex: 1;">
@@ -261,8 +263,12 @@
                     </div>
                     <div class="flex">
                         <div class="form-group" style="flex: 1;">
-                            <label>Премия/Удержание:</label>
-                            <input type="number" id="bonus-amount" placeholder="Сумма (+/-)">
+                            <label>Премия:</label>
+                            <input type="number" id="bonus-amount" placeholder="Сумма (+)" value="0">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Удержание:</label>
+                            <input type="number" id="penalty-amount" placeholder="Сумма (-)" value="0">
                         </div>
                         <div class="form-group" style="flex: 2;">
                             <label>Примечание:</label>
@@ -283,7 +289,7 @@
                 <div class="profile-info">
                     <div class="profile-item">
                         <div class="profile-label">Должность</div>
-                        <div class="profile-value" id="user-position">Сотрудник</div>
+                        <div class="profile-value" id="user-position">Охранник</div>
                     </div>
                     <div class="profile-item">
                         <div class="profile-label">Ставка за смену</div>
@@ -299,7 +305,7 @@
             <!-- ВКЛАДКИ ПОЛЬЗОВАТЕЛЯ -->
             <div class="tabs">
                 <button class="tab active" data-tab="shifts"><i class="fas fa-calendar-alt"></i> Смены</button>
-                <button class="tab" data-tab="stats"><i class="fas fa-chart-bar"></i> Статистика</button>
+                <button class="tab" data-tab="posts"><i class="fas fa-clipboard-list"></i> Постовая</button>
                 <button class="tab" data-tab="payments"><i class="fas fa-money-bill-wave"></i> Выплаты</button>
             </div>
             
@@ -319,26 +325,12 @@
                 <div id="user-calendar" class="calendar-grid"></div>
             </div>
             
-            <!-- ВКЛАДКА: СТАТИСТИКА -->
-            <div id="tab-stats" class="tab-content">
-                <h2><i class="fas fa-chart-bar"></i> Статистика</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="profile-label">Обычных смен</div>
-                        <div class="stat-value" id="stat-regular">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="profile-label">Подработок</div>
-                        <div class="stat-value" id="stat-extra">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="profile-label">Ожидает выплаты</div>
-                        <div class="stat-value" id="stat-pending">0 ₽</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="profile-label">Выплачено всего</div>
-                        <div class="stat-value" id="stat-paid">0 ₽</div>
-                    </div>
+            <!-- ВКЛАДКА: ПОСТОВАЯ -->
+            <div id="tab-posts" class="tab-content">
+                <h2><i class="fas fa-clipboard-list"></i> Расписание постов</h2>
+                <div id="posts-container">
+                    <!-- Таблица будет загружена через JavaScript -->
+                    <div id="posts-loading">Загрузка расписания...</div>
                 </div>
             </div>
             
@@ -427,15 +419,11 @@
             },
             
             showSection: function(sectionId) {
-                // Корректируем ID если передали короткий вариант
-                const idMap = {
-                    'welcome': 'welcome-section',
-                    'login': 'login-section', 
-                    'admin': 'admin-section',
-                    'user': 'user-section'
-                };
-                
-                const fullId = idMap[sectionId] || sectionId;
+                // Автоматически добавляем '-section' если нужно
+                let fullId = sectionId;
+                if (!sectionId.includes('-section')) {
+                    fullId = sectionId + '-section';
+                }
                 
                 const sections = ['welcome-section', 'login-section', 'admin-section', 'user-section'];
                 sections.forEach(id => {
@@ -460,10 +448,11 @@
                 const navUser = this.getElement('nav-user');
                 const navLogout = this.getElement('nav-logout');
                 
+                // Для админа скрываем кнопку "Кабинет", показываем только "Админ"
                 if (navHome) navHome.classList.toggle('hidden', isLoggedIn && !isAdmin);
                 if (navLogin) navLogin.classList.toggle('hidden', isLoggedIn);
                 if (navAdmin) navAdmin.classList.toggle('hidden', !isAdmin);
-                if (navUser) navUser.classList.toggle('hidden', !isLoggedIn);
+                if (navUser) navUser.classList.toggle('hidden', !isLoggedIn || isAdmin); // Скрываем для админа
                 if (navLogout) navLogout.classList.toggle('hidden', !isLoggedIn);
             },
             
@@ -490,6 +479,8 @@
         let currentYear = new Date().getFullYear();
         let selectedUserId = '';
         let shiftsMap = {};
+        let postsData = [];
+        let isAdmin = false;
         
         // === ТАБЫ ===
         function initTabs() {
@@ -505,6 +496,11 @@
                     this.classList.add('active');
                     const content = document.getElementById(`tab-${tabId}`);
                     if (content) content.classList.add('active');
+                    
+                    // Если открыли вкладку "Постовая", загружаем данные
+                    if (tabId === 'posts') {
+                        loadPosts();
+                    }
                 });
             });
         }
@@ -542,9 +538,9 @@
                 const container = app.getElement('users-container');
                 if (container) {
                     container.innerHTML = allUsers.map(user => `
-                        <div class="user-card ${user.role === 'admin' ? 'admin' : ''}">
+                        <div class="user-card ${user.role === 'admin' ? 'admin' : ''}" style="background: #f8f9fa; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px;">
                             <strong>${user.fullName || user.email}</strong><br>
-                            <small>${user.role === 'admin' ? 'Администратор' : 'Сотрудник'}</small><br>
+                            <small>${user.role === 'admin' ? 'Администратор' : 'Охранник'}</small><br>
                             <small>Ставка: ${user.rate || 0} ₽</small>
                         </div>
                     `).join('');
@@ -555,7 +551,7 @@
                 const paymentSelect = app.getElement('payment-user');
                 
                 if (select) {
-                    select.innerHTML = '<option value="">Выберите сотрудника</option>';
+                    select.innerHTML = '<option value="">Выберите охранника</option>';
                     allUsers.forEach(user => {
                         if (user.role !== 'admin') {
                             const option = document.createElement('option');
@@ -575,7 +571,7 @@
                 }
                 
                 if (paymentSelect) {
-                    paymentSelect.innerHTML = '<option value="">Выберите сотрудника</option>';
+                    paymentSelect.innerHTML = '<option value="">Выберите охранника</option>';
                     allUsers.forEach(user => {
                         if (user.role !== 'admin') {
                             const option = document.createElement('option');
@@ -625,7 +621,7 @@
                 nameInput.value = '';
                 
                 loadUsers();
-                alert(`Сотрудник ${fullName} создан!`);
+                alert(`Охранник ${fullName} создан!`);
             } catch (error) {
                 alert('Ошибка: ' + error.message);
             }
@@ -729,7 +725,7 @@
             container.querySelectorAll('.calendar-day').forEach(day => {
                 day.addEventListener('click', function(e) {
                     if (!selectedUserId) {
-                        alert('Сначала выберите сотрудника');
+                        alert('Сначала выберите охранника');
                         return;
                     }
                     
@@ -813,7 +809,7 @@
         // === СОХРАНЕНИЕ СМЕН ===
         app.safeAddEventListener('save-shifts-btn', 'click', async () => {
             if (!selectedUserId) {
-                alert('Выберите сотрудника');
+                alert('Выберите охранника');
                 return;
             }
             
@@ -934,6 +930,208 @@
             container.innerHTML = html;
         }
         
+        // === РАБОТА С ПОСТАМИ ===
+        async function loadPosts() {
+            try {
+                const snapshot = await db.collection('posts').orderBy('date').get();
+                postsData = [];
+                snapshot.forEach(doc => {
+                    postsData.push({ id: doc.id, ...doc.data() });
+                });
+                
+                renderPostsTable();
+            } catch (error) {
+                console.error('Ошибка загрузки постов:', error);
+            }
+        }
+        
+        function renderPostsTable() {
+            const container = app.getElement('posts-container');
+            if (!container) return;
+            
+            if (postsData.length === 0) {
+                container.innerHTML = `
+                    <div class="message">
+                        <p>Расписание постов пустое</p>
+                        ${isAdmin ? '<button id="add-first-post" class="btn-success" style="margin-top: 10px;"><i class="fas fa-plus"></i> Добавить первый пост</button>' : ''}
+                    </div>
+                `;
+                if (isAdmin) {
+                    app.safeAddEventListener('add-first-post', 'click', addNewPostRow);
+                }
+                return;
+            }
+            
+            // Группируем по дате
+            const postsByDate = {};
+            postsData.forEach(post => {
+                if (!postsByDate[post.date]) {
+                    postsByDate[post.date] = [];
+                }
+                postsByDate[post.date].push(post);
+            });
+            
+            let html = '';
+            
+            // Для каждой даты
+            Object.keys(postsByDate).sort().forEach(date => {
+                const posts = postsByDate[date];
+                const dateObj = new Date(date);
+                const formattedDate = dateObj.toLocaleDateString('ru-RU');
+                
+                html += `
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Дата: ${formattedDate}</span>
+                            ${isAdmin ? `<button class="btn-success add-post-btn" data-date="${date}" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;"><i class="fas fa-plus"></i> Добавить строку</button>` : ''}
+                        </h3>
+                        <div class="table-responsive">
+                            <table class="posts-table">
+                                <thead>
+                                    <tr>
+                                        <th>Пост</th>
+                                        <th>Охранник</th>
+                                        <th>Время</th>
+                                        ${isAdmin ? '<th>Действия</th>' : ''}
+                                    </tr>
+                                </thead>
+                                <tbody id="posts-body-${date.replace(/-/g, '')}">
+                                    ${posts.map((post, index) => `
+                                        <tr class="post-row" data-id="${post.id}">
+                                            <td>
+                                                ${isAdmin ? `<input type="text" value="${post.post || ''}" class="post-input" placeholder="Название поста">` : post.post || ''}
+                                            </td>
+                                            <td>
+                                                ${isAdmin ? renderUserSelect(post.guardId) : (post.guardName || 'Не назначен')}
+                                            </td>
+                                            <td>
+                                                ${isAdmin ? `<input type="time" value="${post.time || '08:00'}" class="time-input">` : (post.time || '08:00')}
+                                            </td>
+                                            ${isAdmin ? `
+                                            <td class="post-controls">
+                                                <button class="btn-success save-post-btn" style="padding: 0.3rem 0.6rem;"><i class="fas fa-save"></i></button>
+                                                <button class="btn-danger delete-post-btn" style="padding: 0.3rem 0.6rem;"><i class="fas fa-trash"></i></button>
+                                            </td>` : ''}
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Добавляем обработчики для админа
+            if (isAdmin) {
+                document.querySelectorAll('.add-post-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const date = this.getAttribute('data-date');
+                        addNewPostRow(date);
+                    });
+                });
+                
+                document.querySelectorAll('.save-post-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const row = this.closest('.post-row');
+                        savePost(row);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-post-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const row = this.closest('.post-row');
+                        deletePost(row);
+                    });
+                });
+            }
+        }
+        
+        function renderUserSelect(selectedId = '') {
+            let html = `<select class="guard-select" style="width: 100%;">`;
+            html += `<option value="">Выберите охранника</option>`;
+            allUsers.forEach(user => {
+                if (user.role !== 'admin') {
+                    html += `<option value="${user.id}" ${user.id === selectedId ? 'selected' : ''}>${user.fullName || user.email}</option>`;
+                }
+            });
+            html += `</select>`;
+            return html;
+        }
+        
+        async function addNewPostRow(date = null) {
+            if (!date) {
+                const today = new Date();
+                date = today.toISOString().split('T')[0];
+            }
+            
+            try {
+                const postRef = await db.collection('posts').add({
+                    date: date,
+                    post: '',
+                    guardId: '',
+                    guardName: '',
+                    time: '08:00',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                await loadPosts(); // Перезагружаем таблицу
+            } catch (error) {
+                alert('Ошибка создания поста: ' + error.message);
+            }
+        }
+        
+        async function savePost(row) {
+            const postId = row.getAttribute('data-id');
+            const postInput = row.querySelector('.post-input');
+            const guardSelect = row.querySelector('.guard-select');
+            const timeInput = row.querySelector('.time-input');
+            
+            if (!postId || !postInput || !guardSelect || !timeInput) return;
+            
+            const post = postInput.value.trim();
+            const guardId = guardSelect.value;
+            const time = timeInput.value;
+            
+            if (!post) {
+                alert('Введите название поста');
+                return;
+            }
+            
+            const guard = allUsers.find(u => u.id === guardId);
+            const guardName = guard ? guard.fullName : '';
+            
+            try {
+                await db.collection('posts').doc(postId).update({
+                    post: post,
+                    guardId: guardId,
+                    guardName: guardName,
+                    time: time,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                alert('Пост сохранен!');
+                await loadPosts(); // Перезагружаем
+            } catch (error) {
+                alert('Ошибка сохранения: ' + error.message);
+            }
+        }
+        
+        async function deletePost(row) {
+            const postId = row.getAttribute('data-id');
+            if (!postId) return;
+            
+            if (!confirm('Удалить этот пост?')) return;
+            
+            try {
+                await db.collection('posts').doc(postId).delete();
+                await loadPosts(); // Перезагружаем
+            } catch (error) {
+                alert('Ошибка удаления: ' + error.message);
+            }
+        }
+        
         // === ОБНОВЛЕНИЕ СТАТИСТИКИ ===
         function updateUserStats() {
             if (!currentUser) return;
@@ -966,17 +1164,6 @@
                     }
                 }
             });
-            
-            // Обновляем статистику
-            const statRegular = app.getElement('stat-regular');
-            const statExtra = app.getElement('stat-extra');
-            const statPending = app.getElement('stat-pending');
-            const statPaid = app.getElement('stat-paid');
-            
-            if (statRegular) statRegular.textContent = regularCount;
-            if (statExtra) statExtra.textContent = extraCount;
-            if (statPending) statPending.textContent = `${pendingAmount} ₽`;
-            if (statPaid) statPaid.textContent = `${paidAmount} ₽`;
             
             // Обновляем ожидаемые выплаты
             const pendingTable = app.getElement('pending-payments');
@@ -1019,7 +1206,7 @@
             const userEmail = app.getElement('user-email');
             
             if (userName) userName.textContent = user.fullName || 'Имя не указано';
-            if (userPosition) userPosition.textContent = user.role === 'admin' ? 'Администратор' : 'Сотрудник';
+            if (userPosition) userPosition.textContent = user.role === 'admin' ? 'Администратор' : 'Охранник';
             if (userRate) userRate.textContent = `${rate} ₽`;
             if (userEmail) userEmail.textContent = user.email;
         }
@@ -1030,14 +1217,16 @@
             const periodFrom = app.getElement('period-from');
             const periodTo = app.getElement('period-to');
             const bonusAmount = app.getElement('bonus-amount');
+            const penaltyAmount = app.getElement('penalty-amount');
             const bonusNote = app.getElement('bonus-note');
             
-            if (!paymentUser || !periodFrom || !periodTo || !bonusAmount || !bonusNote) return;
+            if (!paymentUser || !periodFrom || !periodTo || !bonusAmount || !penaltyAmount || !bonusNote) return;
             
             const userId = paymentUser.value;
             const fromDate = periodFrom.value;
             const toDate = periodTo.value;
             const bonus = parseInt(bonusAmount.value) || 0;
+            const penalty = parseInt(penaltyAmount.value) || 0;
             const note = bonusNote.value;
             
             if (!userId || !fromDate || !toDate) {
@@ -1089,7 +1278,7 @@
                 }
                 
                 // Добавляем премию/удержание
-                const finalAmount = totalAmount + bonus;
+                const finalAmount = totalAmount + bonus - penalty;
                 
                 // Создаём запись о выплате
                 const paymentRef = db.collection('salary_payments').doc();
@@ -1102,6 +1291,7 @@
                     extraShifts: extraCount,
                     baseAmount: totalAmount,
                     bonus: bonus,
+                    penalty: penalty,
                     bonusNote: note,
                     totalAmount: finalAmount,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -1122,7 +1312,8 @@
                 }
                 
                 // Очищаем поля
-                bonusAmount.value = '';
+                bonusAmount.value = '0';
+                penaltyAmount.value = '0';
                 bonusNote.value = '';
                 
                 const resultDiv = app.getElement('calculation-result');
@@ -1130,11 +1321,12 @@
                     resultDiv.innerHTML = `
                         <div class="success">
                             <strong>Выплата создана!</strong><br>
-                            Сотрудник: ${user.fullName || user.email}<br>
+                            Охранник: ${user.fullName || user.email}<br>
                             Период: ${fromDate} - ${toDate}<br>
                             Обычных: ${regularCount} × ${rate} ₽ = ${regularCount * rate} ₽<br>
                             Подработок: ${extraCount} × ${rate + 100} ₽ = ${extraCount * (rate + 100)} ₽<br>
-                            Премия/удержание: ${bonus > 0 ? '+' : ''}${bonus} ₽<br>
+                            Премия: +${bonus} ₽<br>
+                            Удержание: -${penalty} ₽<br>
                             <strong>Итого: ${finalAmount} ₽</strong>
                         </div>
                     `;
@@ -1166,7 +1358,6 @@
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     const date = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleDateString() : 'Дата неизвестна';
-                    const bonusSign = data.bonus > 0 ? '+' : '';
                     
                     html += `
                         <tr>
@@ -1175,8 +1366,8 @@
                             <td>${data.regularShifts || 0}</td>
                             <td>${data.extraShifts || 0}</td>
                             <td>${data.baseAmount || 0} ₽</td>
-                            <td>${bonusSign}${data.bonus || 0} ₽</td>
-                            <td>${data.bonus < 0 ? data.bonus * -1 : 0} ₽</td>
+                            <td>${data.bonus || 0} ₽</td>
+                            <td>${data.penalty || 0} ₽</td>
                             <td>${data.bonusNote || ''}</td>
                             <td><strong>${data.totalAmount || 0} ₽</strong></td>
                         </tr>
@@ -1254,7 +1445,7 @@
                 await loadUsers();
                 
                 const userDoc = await db.collection('users').doc(user.uid).get();
-                const isAdmin = userDoc.exists && userDoc.data().role === 'admin';
+                isAdmin = userDoc.exists && userDoc.data().role === 'admin';
                 
                 if (isAdmin) {
                     app.showSection('admin-section');
@@ -1268,6 +1459,7 @@
                 
                 app.updateNavigation();
             } else {
+                isAdmin = false;
                 app.showSection('welcome-section');
                 app.updateNavigation();
             }

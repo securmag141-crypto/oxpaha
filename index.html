@@ -13,16 +13,16 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Roboto', sans-serif; background: #0a192f; color: #e6f1ff; line-height: 1.6; }
         
-        /* HEADER */
+        /* HEADER - ТЕМНО-СИНИЙ */
         header { 
             background: linear-gradient(135deg, #0a192f, #112240); 
-            color: #7CFC00; /* Салатовый вместо ярко-голубого */
+            color: #64ffda; 
             padding: 1rem; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            border-bottom: 2px solid #7CFC00;
+            border-bottom: 2px solid #64ffda;
         }
         .logo { 
             font-size: 1.4rem; 
@@ -31,7 +31,7 @@
             align-items: center; 
             gap: 12px; 
         }
-        .logo i { color: #7CFC00; }
+        .logo i { color: #64ffda; }
         nav ul { display: flex; list-style: none; gap: 1rem; flex-wrap: wrap; }
         nav a { 
             color: #ccd6f6; 
@@ -42,11 +42,11 @@
             transition: all 0.3s; 
             font-size: 0.95rem; 
             white-space: nowrap;
-            background: rgba(124, 252, 0, 0.1);
+            background: rgba(100, 255, 218, 0.1);
         }
         nav a:hover { 
-            background: rgba(124, 252, 0, 0.2); 
-            color: #7CFC00;
+            background: rgba(100, 255, 218, 0.2); 
+            color: #64ffda;
             transform: translateY(-2px);
         }
         
@@ -61,9 +61,9 @@
             border: 1px solid #233554;
         }
         h1 { 
-            color: #7CFC00; 
+            color: #64ffda; 
             margin-bottom: 1.2rem; 
-            border-bottom: 2px solid #7CFC00; 
+            border-bottom: 2px solid #64ffda; 
             padding-bottom: 0.6rem; 
             font-size: 1.6rem;
             display: flex;
@@ -74,7 +74,7 @@
             color: #ccd6f6; 
             margin: 1.2rem 0 0.6rem; 
             font-size: 1.3rem;
-            border-left: 4px solid #7CFC00;
+            border-left: 4px solid #64ffda;
             padding-left: 10px;
         }
         h3 { 
@@ -102,10 +102,10 @@
             transition: all 0.3s;
         }
         .tab.active { 
-            color: #7CFC00; 
-            border-bottom-color: #7CFC00; 
+            color: #64ffda; 
+            border-bottom-color: #64ffda; 
             font-weight: 600; 
-            background: rgba(124, 252, 0, 0.05);
+            background: rgba(100, 255, 218, 0.05);
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -131,11 +131,11 @@
         }
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #7CFC00;
-            box-shadow: 0 0 0 2px rgba(124, 252, 0, 0.2);
+            border-color: #64ffda;
+            box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
         }
         button { 
-            background: linear-gradient(to right, #7CFC00, #32CD32); 
+            background: linear-gradient(to right, #64ffda, #52d9c8); 
             color: #0a192f; 
             border: none; 
             cursor: pointer; 
@@ -144,9 +144,9 @@
             font-size: 1rem;
         }
         button:hover { 
-            background: linear-gradient(to right, #32CD32, #228B22); 
+            background: linear-gradient(to right, #52d9c8, #3bc5b4); 
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(124, 252, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
         }
         .btn-secondary { 
             background: #495670; 
@@ -175,134 +175,78 @@
             font-size: 0.85rem; 
         }
         
-        /* ТАБЛИЦА СМЕН АДМИНА - ИСПРАВЛЕННАЯ */
-        .shifts-table-container {
-            position: relative;
-            margin-top: 1rem;
-            overflow: hidden;
-            border-radius: 8px;
-            border: 1px solid #233554;
-        }
-        
-        .shifts-scroll-wrapper {
-            overflow-x: auto;
-            position: relative;
-        }
-        
-        .shifts-scroll-controls {
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 100;
-        }
-        
-        .scroll-btn {
-            background: rgba(124, 252, 0, 0.2);
-            color: #7CFC00;
-            border: 1px solid rgba(124, 252, 0, 0.3);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-            backdrop-filter: blur(5px);
-        }
-        
-        .scroll-btn:hover {
-            background: rgba(124, 252, 0, 0.4);
-            transform: scale(1.1);
-        }
-        
+        /* ТАБЛИЦА СМЕН АДМИНА */
         .shifts-admin-table { 
             width: 100%; 
-            border-collapse: separate; 
-            border-spacing: 0;
-            font-size: 0.85rem;
+            border-collapse: collapse; 
+            margin-top: 1rem; 
+            font-size: 0.9rem;
             background: #0a192f;
+            border-radius: 8px;
+            overflow: hidden;
             table-layout: fixed;
         }
-        
         .shifts-admin-table th, 
         .shifts-admin-table td { 
-            padding: 0.6rem; 
+            padding: 0.8rem 0.5rem; 
             text-align: center; 
-            border-right: 1px solid #233554; 
-            border-bottom: 1px solid #233554;
-            min-width: 40px;
-            height: 40px;
+            border: 1px solid #233554; 
+            min-width: 45px;
+            max-width: 55px;
             overflow: hidden;
-            white-space: nowrap;
+            text-overflow: ellipsis;
         }
-        
         .shifts-admin-table th { 
             background: #112240; 
             font-weight: 600; 
-            color: #7CFC00;
+            color: #64ffda;
             position: sticky;
             top: 0;
             z-index: 10;
         }
-        
         .shifts-admin-table th:first-child,
         .shifts-admin-table td:first-child {
+            min-width: 50px;
+            max-width: 60px;
             position: sticky;
             left: 0;
+            z-index: 5;
             background: #112240;
-            z-index: 20;
-            min-width: 50px;
-            max-width: 50px;
-            border-right: 2px solid #7CFC00;
         }
-        
         .shifts-admin-table th:nth-child(2),
         .shifts-admin-table td:nth-child(2) {
+            min-width: 180px;
+            max-width: 200px;
             position: sticky;
             left: 50px;
+            z-index: 5;
             background: #112240;
-            z-index: 20;
-            min-width: 200px;
-            max-width: 200px;
-            text-align: left;
-            padding-left: 15px;
-            border-right: 2px solid #7CFC00;
         }
-        
-        .shifts-admin-table tr:nth-child(even) td:not(:first-child):not(:nth-child(2)) {
+        .shifts-admin-table tr:nth-child(even) {
             background: rgba(17, 34, 64, 0.5);
         }
-        
-        .shifts-admin-table tr:hover td:not(:first-child):not(:nth-child(2)) {
-            background: rgba(124, 252, 0, 0.05);
+        .shifts-admin-table tr:hover {
+            background: rgba(100, 255, 218, 0.05);
         }
-        
         .shifts-cell { 
+            min-width: 40px; 
+            height: 40px; 
             cursor: pointer; 
             border-radius: 4px;
             transition: all 0.2s;
-            position: relative;
         }
-        
         .shifts-cell:hover { 
             transform: scale(1.1); 
-            box-shadow: 0 0 10px rgba(124, 252, 0, 0.3);
-            z-index: 5;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
         }
         
-        /* ЦВЕТА СМЕН - ОБНОВЛЕННЫЕ */
-        .shift-regular { background: #2ecc71; } /* зелёный */
+        /* ЦВЕТА СМЕН - ИСПРАВЛЕННЫЕ */
+        .shift-regular { background: #27ae60; } /* темно-зеленый вместо кислотного */
         .shift-extra { background: #a3e4d7; } /* салатовый */
         .shift-dayoff { background: #3498db; } /* синий */
         .shift-paid { background: #9b59b6; } /* фиолетовый */
         .shift-problem { background: #e74c3c; } /* красный */
-        .shift-done { background: #2c3e50; color: white; } /* чёрный */
+        .shift-done { background: #2c3e50; color: #bdc3c7; } /* чёрный с светлым текстом */
         .shift-done-extra { background: #95a5a6; color: white; } /* серый */
         .shift-paid-extra { background: #e84393; color: white; } /* розовый */
         
@@ -343,7 +287,7 @@
         .posts-table th { 
             background: #112240; 
             font-weight: 600; 
-            color: #7CFC00;
+            color: #64ffda;
         }
         .posts-table .post-controls { display: flex; gap: 0.5rem; }
         .post-row input, 
@@ -355,9 +299,12 @@
             border: 1px solid #233554;
         }
         .table-responsive { 
-            overflow-x: auto; 
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
             border-radius: 8px;
             border: 1px solid #233554;
+            max-width: 100%;
         }
         
         /* POSTS MANAGEMENT */
@@ -386,11 +333,11 @@
             padding: 1.5rem; 
             border-radius: 12px; 
             margin-bottom: 1.8rem;
-            border: 1px solid #7CFC00;
-            box-shadow: 0 5px 20px rgba(124, 252, 0, 0.1);
+            border: 1px solid #64ffda;
+            box-shadow: 0 5px 20px rgba(100, 255, 218, 0.1);
         }
         .user-profile h1 { 
-            color: #7CFC00; 
+            color: #64ffda; 
             border-bottom: none; 
             margin-bottom: 0.8rem; 
         }
@@ -408,10 +355,25 @@
         .profile-value { 
             font-size: 1.2rem; 
             font-weight: bold; 
-            color: #7CFC00;
+            color: #64ffda;
         }
         
         /* CALENDAR (для пользователя) */
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #0a192f;
+            border-radius: 8px;
+            border: 1px solid #233554;
+        }
+        .month-navigation {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
         .calendar-grid { 
             display: grid; 
             grid-template-columns: repeat(7, 1fr); 
@@ -420,7 +382,7 @@
         }
         .calendar-header { 
             background: #233554; 
-            color: #7CFC00; 
+            color: #64ffda; 
             padding: 0.8rem; 
             text-align: center; 
             font-weight: 600; 
@@ -439,13 +401,13 @@
         }
         .calendar-day:hover { 
             background: #112240; 
-            border-color: #7CFC00;
+            border-color: #64ffda;
             transform: translateY(-3px);
         }
         .day-number { 
             font-weight: bold; 
             margin-bottom: 0.3rem; 
-            color: #7CFC00; 
+            color: #64ffda; 
             font-size: 0.95rem; 
         }
         .shift-marker { 
@@ -535,11 +497,13 @@
             .calendar-day { min-height: 70px; padding: 0.4rem; }
             .calendar-header { padding: 0.6rem; font-size: 0.8rem; }
             .shift-marker { height: 10px; }
-            .shifts-scroll-controls { display: none; }
+            .shifts-admin-table th:first-child,
+            .shifts-admin-table td:first-child {
+                position: static;
+            }
             .shifts-admin-table th:nth-child(2),
             .shifts-admin-table td:nth-child(2) {
-                min-width: 150px;
-                max-width: 150px;
+                position: static;
             }
         }
         
@@ -641,28 +605,22 @@
                 </div>
                 
                 <!-- ТАБЛИЦА СМЕН АДМИНА -->
-                <div class="shifts-table-container">
-                    <div class="shifts-scroll-wrapper" id="shifts-scroll-wrapper">
-                        <table class="shifts-admin-table" id="admin-shifts-table">
-                            <thead>
-                                <tr>
-                                    <th rowspan="2">№</th>
-                                    <th rowspan="2">Сотрудник</th>
-                                    <th colspan="31" id="table-month-year">Январь 2024</th>
-                                </tr>
-                                <tr id="days-header">
-                                    <!-- Дни месяца будут добавлены через JS -->
-                                </tr>
-                            </thead>
-                            <tbody id="shifts-table-body">
-                                <!-- Данные будут добавлены через JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="shifts-scroll-controls">
-                        <button class="scroll-btn" id="scroll-left-btn"><i class="fas fa-chevron-left"></i></button>
-                        <button class="scroll-btn" id="scroll-right-btn"><i class="fas fa-chevron-right"></i></button>
-                    </div>
+                <div class="table-responsive">
+                    <table class="shifts-admin-table" id="admin-shifts-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">№</th>
+                                <th rowspan="2">Сотрудник</th>
+                                <th colspan="31" id="table-month-year">Январь 2024</th>
+                            </tr>
+                            <tr id="days-header">
+                                <!-- Дни месяца будут добавлены через JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="shifts-table-body">
+                            <!-- Данные будут добавлены через JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
@@ -811,6 +769,28 @@
             <!-- ВКЛАДКА: СМЕНЫ -->
             <div id="tab-shifts" class="tab-content active">
                 <h2><i class="fas fa-calendar-alt"></i> Мой график смен</h2>
+                
+                <!-- КОНТРОЛЫ ВЫБОРА МЕСЯЦА -->
+                <div class="calendar-controls">
+                    <div class="month-navigation">
+                        <button id="prev-month" class="btn-secondary"><i class="fas fa-chevron-left"></i> Предыдущий</button>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <select id="user-selected-month" style="width: 150px;">
+                                <option value="0">Январь</option><option value="1">Февраль</option>
+                                <option value="2">Март</option><option value="3">Апрель</option>
+                                <option value="4">Май</option><option value="5">Июнь</option>
+                                <option value="6">Июль</option><option value="7">Август</option>
+                                <option value="8">Сентябрь</option><option value="9">Октябрь</option>
+                                <option value="10">Ноябрь</option><option value="11">Декабрь</option>
+                            </select>
+                            <input type="number" id="user-selected-year" value="2024" style="width: 100px;">
+                        </div>
+                        <button id="next-month" class="btn-secondary">Следующий <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <button id="load-user-shifts" class="btn-success"><i class="fas fa-sync-alt"></i> Обновить</button>
+                </div>
+                
+                <!-- ЛЕГЕНДА -->
                 <div class="legend">
                     <div class="legend-item"><div class="legend-color shift-regular"></div><span>Обычная</span></div>
                     <div class="legend-item"><div class="legend-color shift-extra"></div><span>Подработка</span></div>
@@ -821,6 +801,8 @@
                     <div class="legend-item"><div class="legend-color shift-dayoff"></div><span>Выходной</span></div>
                     <div class="legend-item"><div class="legend-color shift-problem"></div><span>Проблема</span></div>
                 </div>
+                
+                <!-- КАЛЕНДАРЬ -->
                 <div id="user-calendar" class="calendar-grid"></div>
             </div>
             
@@ -858,7 +840,7 @@
                             <tr><td colspan="4">Нет ожидающих выплат</td></tr>
                         </tbody>
                         <tfoot>
-                            <tr style="font-weight: bold; color: #7CFC00;">
+                            <tr style="font-weight: bold; color: #64ffda;">
                                 <td colspan="3">Итого к выплате:</td>
                                 <td id="pending-total">0 ₽</td>
                             </tr>
@@ -924,6 +906,7 @@
             },
             
             showSection: function(sectionId) {
+                // Автоматически добавляем '-section' если нужно
                 let fullId = sectionId;
                 if (!sectionId.includes('-section')) {
                     fullId = sectionId + '-section';
@@ -952,10 +935,11 @@
                 const navUser = this.getElement('nav-user');
                 const navLogout = this.getElement('nav-logout');
                 
+                // Админ видит и "Админ" и "Кабинет"
                 if (navHome) navHome.classList.toggle('hidden', isLoggedIn);
                 if (navLogin) navLogin.classList.toggle('hidden', isLoggedIn);
                 if (navAdmin) navAdmin.classList.toggle('hidden', !isAdmin);
-                if (navUser) navUser.classList.toggle('hidden', !isLoggedIn);
+                if (navUser) navUser.classList.toggle('hidden', !isLoggedIn); // Админ ТОЖЕ видит кабинет!
                 if (navLogout) navLogout.classList.toggle('hidden', !isLoggedIn);
             },
             
@@ -980,12 +964,14 @@
         let allUsers = [];
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
+        let userViewMonth = currentMonth;
+        let userViewYear = currentYear;
         let shiftsMap = {};
         let postsData = [];
         let isAdmin = false;
-        let adminShiftsData = {};
+        let adminShiftsData = {}; // Данные для таблицы админа
         
-        // === ПРЕДУСТАНОВЛЕННЫЕ ПОСТЫ ===
+        // === ПРЕДУСТАНОВЛЕННЫЕ ПОСТЫ (ШАБЛОН) С НОМЕРАМИ ===
         const defaultPosts = [
             { number: "1", post: "Старший смены", time: "06:00" },
             { number: "2", post: "Помощник ст.смены", time: "18:00" },
@@ -1007,9 +993,11 @@
                 tab.addEventListener('click', function() {
                     const tabId = this.getAttribute('data-tab');
                     
+                    // Убрать активный класс у всех табов
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                     
+                    // Добавить активный класс текущему табу
                     this.classList.add('active');
                     const content = document.getElementById(`tab-${tabId}`);
                     if (content) content.classList.add('active');
@@ -1046,6 +1034,7 @@
                 allUsers = [];
                 snapshot.forEach(doc => {
                     const userData = doc.data();
+                    // Разделяем ФИО на фамилию и имя
                     let lastName = '';
                     let firstName = '';
                     
@@ -1068,6 +1057,7 @@
                     });
                 });
                 
+                // Сортируем по фамилии
                 allUsers.sort((a, b) => {
                     if (a.lastName && b.lastName) {
                         return a.lastName.localeCompare(b.lastName);
@@ -1075,20 +1065,22 @@
                     return (a.displayName || '').localeCompare(b.displayName || '');
                 });
                 
-                // Список сотрудников
+                // Показ списка пользователей
                 const container = app.getElement('users-container');
                 if (container) {
                     container.innerHTML = allUsers.map((user, index) => `
                         <div class="user-card ${user.role === 'admin' ? 'admin' : ''}" style="background: #112240; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; border: 1px solid #233554;">
-                            <strong style="color: #7CFC00;">${user.displayName || user.email}</strong><br>
+                            <strong style="color: #64ffda;">${user.displayName || user.email}</strong><br>
                             <small style="color: #a8b2d1;">${user.role === 'admin' ? 'Администратор' : 'Охранник'}</small><br>
                             <small style="color: #8892b0;">Ставка: ${user.rate || 0} ₽</small>
+                            ${user.role !== 'admin' ? `<br><small style="color: #495670;">ID: ${user.id.substring(0, 8)}...</small>` : ''}
                         </div>
                     `).join('');
                 }
                 
-                // Селект для выплат
+                // Селект выбора пользователя для выплат
                 const paymentSelect = app.getElement('payment-user');
+                
                 if (paymentSelect) {
                     paymentSelect.innerHTML = '<option value="">Выберите охранника</option>';
                     allUsers.forEach(user => {
@@ -1101,6 +1093,7 @@
                     });
                 }
                 
+                // Обновляем таблицу смен если она уже загружена
                 if (isAdmin && document.getElementById('tab-shifts-admin')?.classList.contains('active')) {
                     await loadAllShiftsForAdmin();
                 }
@@ -1131,6 +1124,7 @@
                 return;
             }
             
+            // Формируем полное имя: Фамилия Имя
             const fullName = `${lastName} ${firstName}`;
             
             try {
@@ -1145,6 +1139,7 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
+                // Очистка полей
                 emailInput.value = '';
                 passwordInput.value = '';
                 lastnameInput.value = '';
@@ -1164,6 +1159,7 @@
                 const month = parseInt(app.getElement('selected-month')?.value || currentMonth);
                 const year = parseInt(app.getElement('selected-year')?.value || currentYear);
                 
+                // Получаем все смены за выбранный месяц
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
                 const startDate = firstDay.toISOString().split('T')[0];
@@ -1174,9 +1170,11 @@
                     .where('date', '<=', endDate)
                     .get();
                 
+                // Сбрасываем данные
                 adminShiftsData = {};
                 shiftsMap = {};
                 
+                // Группируем смены по пользователям
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     const userId = data.userId;
@@ -1193,6 +1191,7 @@
                         shiftId: doc.id
                     };
                     
+                    // Также сохраняем в shiftsMap для других функций
                     if (!shiftsMap[userId]) {
                         shiftsMap[userId] = {};
                     }
@@ -1203,6 +1202,7 @@
                     };
                 });
                 
+                // Рендерим таблицу
                 renderAdminShiftsTable(month, year);
                 
             } catch (error) {
@@ -1219,12 +1219,15 @@
             
             if (!tableBody || !daysHeader || !monthYearHeader) return;
             
+            // Обновляем заголовок месяца
             const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
                                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
             monthYearHeader.textContent = `${monthNames[month]} ${year}`;
             
+            // Рассчитываем дни месяца
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             
+            // Генерируем заголовки дней
             let daysHtml = '';
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
@@ -1237,14 +1240,17 @@
             }
             daysHeader.innerHTML = daysHtml;
             
+            // Фильтруем только охранников (не админов)
             const guards = allUsers.filter(user => user.role !== 'admin');
             
+            // Генерируем строки таблицы
             let tableHtml = '';
             guards.forEach((guard, index) => {
                 tableHtml += `<tr data-user-id="${guard.id}">`;
-                tableHtml += `<td style="font-weight: bold; color: #7CFC00;">${index + 1}</td>`;
-                tableHtml += `<td style="text-align: left; white-space: normal; word-wrap: break-word;"><strong>${guard.displayName}</strong><br><small style="color: #8892b0;">${guard.rate || 0} ₽</small></td>`;
+                tableHtml += `<td style="font-weight: bold; color: #64ffda;">${index + 1}</td>`;
+                tableHtml += `<td style="text-align: left; padding-left: 15px;"><strong>${guard.displayName}</strong><br><small style="color: #8892b0;">${guard.rate || 0} ₽</small></td>`;
                 
+                // Ячейки дней
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const shift = adminShiftsData[guard.id] ? adminShiftsData[guard.id][dateStr] : null;
@@ -1302,6 +1308,7 @@
             
             tableBody.innerHTML = tableHtml;
             
+            // Добавляем обработчики кликов на ячейки
             tableBody.querySelectorAll('.shifts-cell').forEach(cell => {
                 cell.addEventListener('click', function(e) {
                     handleShiftCellClick(this);
@@ -1322,6 +1329,7 @@
                 return;
             }
             
+            // ЦИКЛ ТИПОВ СМЕН
             const shiftCycle = [
                 {type: 'regular', color: 'shift-regular', title: 'Обычная смена'},
                 {type: 'extra', color: 'shift-extra', title: 'Подработка'},
@@ -1332,14 +1340,17 @@
                 null
             ];
             
+            // Находим текущую позицию
             let currentIndex = shiftCycle.findIndex(item => 
                 item ? item.type === currentType : currentType === ''
             );
             if (currentIndex === -1) currentIndex = shiftCycle.length - 1;
             
+            // Следующая позиция
             const nextIndex = (currentIndex + 1) % shiftCycle.length;
             const nextItem = shiftCycle[nextIndex];
             
+            // Обновляем визуально
             cell.className = 'shifts-cell';
             if (nextItem) {
                 cell.classList.add(nextItem.color);
@@ -1356,6 +1367,7 @@
                 cell.innerHTML = '+';
             }
             
+            // Сохраняем в локальной карте
             if (!adminShiftsData[userId]) adminShiftsData[userId] = {};
             
             if (nextItem) {
@@ -1385,6 +1397,7 @@
                 delete adminShiftsData[userId][date];
             }
             
+            // Также обновляем shiftsMap для совместимости
             if (!shiftsMap[userId]) shiftsMap[userId] = {};
             if (nextItem) {
                 let type, done, paid;
@@ -1419,9 +1432,11 @@
                 const batch = db.batch();
                 let changesCount = 0;
                 
+                // Для каждого пользователя
                 for (const userId in adminShiftsData) {
                     const userShifts = adminShiftsData[userId];
                     
+                    // Удаляем старые смены за этот месяц для этого пользователя
                     const oldShifts = await db.collection('shifts')
                         .where('userId', '==', userId)
                         .where('date', '>=', `${year}-${monthStr}-01`)
@@ -1432,6 +1447,7 @@
                         batch.delete(doc.ref);
                     });
                     
+                    // Добавляем новые смены
                     for (const [date, shift] of Object.entries(userShifts)) {
                         if (date.startsWith(`${year}-${monthStr}`)) {
                             const shiftRef = db.collection('shifts').doc();
@@ -1462,21 +1478,6 @@
             await loadAllShiftsForAdmin();
         });
         
-        // === СКРОЛЛ ТАБЛИЦЫ ===
-        app.safeAddEventListener('scroll-left-btn', 'click', function() {
-            const wrapper = document.getElementById('shifts-scroll-wrapper');
-            if (wrapper) {
-                wrapper.scrollBy({ left: -200, behavior: 'smooth' });
-            }
-        });
-        
-        app.safeAddEventListener('scroll-right-btn', 'click', function() {
-            const wrapper = document.getElementById('shifts-scroll-wrapper');
-            if (wrapper) {
-                wrapper.scrollBy({ left: 200, behavior: 'smooth' });
-            }
-        });
-        
         // === ОБНОВЛЕНИЕ ТАБЛИЦЫ ПРИ ИЗМЕНЕНИИ МЕСЯЦА/ГОДА ===
         app.safeAddEventListener('selected-month', 'change', async () => {
             if (isAdmin && document.getElementById('tab-shifts-admin')?.classList.contains('active')) {
@@ -1490,15 +1491,65 @@
             }
         });
         
-        // === КАЛЕНДАРЬ ПОЛЬЗОВАТЕЛЯ ===
-        function renderUserCalendar() {
+        // === КАЛЕНДАРЬ ПОЛЬЗОВАТЕЛЯ С ВЫБОРОМ МЕСЯЦА ===
+        async function loadUserShiftsForMonth() {
+            if (!currentUser) return;
+            
+            try {
+                const month = parseInt(app.getElement('user-selected-month')?.value || userViewMonth);
+                const year = parseInt(app.getElement('user-selected-year')?.value || userViewYear);
+                
+                // Получаем смены за выбранный месяц
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const startDate = firstDay.toISOString().split('T')[0];
+                const endDate = lastDay.toISOString().split('T')[0];
+                
+                const snapshot = await db.collection('shifts')
+                    .where('userId', '==', currentUser.uid)
+                    .where('date', '>=', startDate)
+                    .where('date', '<=', endDate)
+                    .get();
+                
+                // Сбрасываем данные для этого пользователя
+                if (!shiftsMap[currentUser.uid]) {
+                    shiftsMap[currentUser.uid] = {};
+                }
+                
+                // Очищаем только смены за этот месяц
+                Object.keys(shiftsMap[currentUser.uid]).forEach(date => {
+                    if (date >= startDate && date <= endDate) {
+                        delete shiftsMap[currentUser.uid][date];
+                    }
+                });
+                
+                // Загружаем новые смены
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    shiftsMap[currentUser.uid][data.date] = {
+                        type: data.type,
+                        done: data.done || false,
+                        paid: data.paid || false
+                    };
+                });
+                
+                renderUserCalendar(month, year);
+                updateUserStats();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки смен для пользователя:', error);
+                alert('Ошибка загрузки смен: ' + error.message);
+            }
+        }
+        
+        function renderUserCalendar(month, year) {
             const container = app.getElement('user-calendar');
             if (!container || !currentUser) return;
             
             const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth();
+            const currentDate = new Date(year, month, today.getDate());
             
+            // Заголовки дней
             const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
             let html = '';
             
@@ -1506,15 +1557,18 @@
                 html += `<div class="calendar-header">${day}</div>`;
             });
             
+            // Дни месяца
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             const totalDays = lastDay.getDate();
             const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
             
+            // Пустые клетки
             for (let i = 0; i < startDay; i++) {
                 html += `<div class="calendar-day"></div>`;
             }
             
+            // Дни месяца
             for (let day = 1; day <= totalDays; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const userShifts = shiftsMap[currentUser.uid] || {};
@@ -1537,14 +1591,19 @@
                     }
                 }
                 
+                const isToday = today.getDate() === day && 
+                               today.getMonth() === month && 
+                               today.getFullYear() === year;
+                
                 html += `
-                    <div class="calendar-day" data-date="${dateStr}">
-                        <div class="day-number">${day}</div>
+                    <div class="calendar-day" data-date="${dateStr}" style="${isToday ? 'border: 2px solid #64ffda;' : ''}">
+                        <div class="day-number" style="${isToday ? 'color: #64ffda; font-size: 1.1rem;' : ''}">${day}</div>
                         ${shift ? `<div class="shift-marker ${shiftClass}"></div>` : ''}
                     </div>
                 `;
             }
             
+            // Дополняем до 35 клеток (5 строк)
             const totalCells = 35;
             const filledCells = startDay + totalDays;
             for (let i = filledCells; i < totalCells; i++) {
@@ -1553,6 +1612,49 @@
             
             container.innerHTML = html;
         }
+        
+        // Обработчики для выбора месяца в кабинете пользователя
+        app.safeAddEventListener('prev-month', 'click', function() {
+            let month = parseInt(app.getElement('user-selected-month').value);
+            let year = parseInt(app.getElement('user-selected-year').value);
+            
+            month--;
+            if (month < 0) {
+                month = 11;
+                year--;
+            }
+            
+            app.getElement('user-selected-month').value = month;
+            app.getElement('user-selected-year').value = year;
+            loadUserShiftsForMonth();
+        });
+        
+        app.safeAddEventListener('next-month', 'click', function() {
+            let month = parseInt(app.getElement('user-selected-month').value);
+            let year = parseInt(app.getElement('user-selected-year').value);
+            
+            month++;
+            if (month > 11) {
+                month = 0;
+                year++;
+            }
+            
+            app.getElement('user-selected-month').value = month;
+            app.getElement('user-selected-year').value = year;
+            loadUserShiftsForMonth();
+        });
+        
+        app.safeAddEventListener('load-user-shifts', 'click', function() {
+            loadUserShiftsForMonth();
+        });
+        
+        app.safeAddEventListener('user-selected-month', 'change', function() {
+            loadUserShiftsForMonth();
+        });
+        
+        app.safeAddEventListener('user-selected-year', 'change', function() {
+            loadUserShiftsForMonth();
+        });
         
         // === ШАБЛОН ПОСТОВ ===
         function renderPostsTemplate() {
@@ -1576,6 +1678,7 @@
             
             container.innerHTML = html;
             
+            // Добавляем обработчики для редактирования шаблона
             document.querySelectorAll('.edit-template-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const index = parseInt(this.getAttribute('data-index'));
@@ -1647,10 +1750,12 @@
                 postsData = [];
                 snapshot.forEach(doc => {
                     const data = doc.data();
+                    // Форматируем имя охранника: Фамилия Имя
                     let guardDisplayName = data.guardName || '';
                     if (guardDisplayName) {
                         const nameParts = guardDisplayName.split(' ');
                         if (nameParts.length >= 2) {
+                            // Меняем порядок: Фамилия Имя
                             guardDisplayName = `${nameParts[0]} ${nameParts.slice(1).join(' ')}`;
                         }
                     }
@@ -1662,6 +1767,7 @@
                     });
                 });
                 
+                // СОРТИРУЕМ ПО ПОЛЮ order
                 postsData.sort((a, b) => {
                     const orderA = a.order || 999;
                     const orderB = b.order || 999;
@@ -1756,6 +1862,7 @@
             
             container.innerHTML = html;
             
+            // Обработчики событий
             app.safeAddEventListener('add-new-post-btn', 'click', function() {
                 addNewPostRowToTable(date);
             });
@@ -1793,6 +1900,7 @@
         
         async function createPostsFromTemplate(date) {
             try {
+                // Удаляем старые посты на эту дату
                 const oldPosts = await db.collection('posts')
                     .where('date', '==', date)
                     .get();
@@ -1802,6 +1910,7 @@
                     batch.delete(doc.ref);
                 });
                 
+                // Добавляем новые посты из шаблона в ТОЧНОМ ПОРЯДКЕ
                 for (let i = 0; i < defaultPosts.length; i++) {
                     const post = defaultPosts[i];
                     const postRef = db.collection('posts').doc();
@@ -1877,6 +1986,7 @@
             const guard = allUsers.find(u => u.id === guardId);
             let guardName = guard ? guard.displayName : '';
             
+            // Форматируем для хранения: Фамилия Имя
             if (guard && guard.lastName && guard.firstName) {
                 guardName = `${guard.lastName} ${guard.firstName}`;
             }
@@ -1928,6 +2038,7 @@
                 const guard = allUsers.find(u => u.id === guardId);
                 let guardName = guard ? guard.displayName : '';
                 
+                // Форматируем для хранения: Фамилия Имя
                 if (guard && guard.lastName && guard.firstName) {
                     guardName = `${guard.lastName} ${guard.firstName}`;
                 }
@@ -2067,6 +2178,7 @@
                 }
             });
             
+            // Обновляем ожидаемые выплаты
             const pendingTable = app.getElement('pending-payments');
             const pendingTotal = app.getElement('pending-total');
             
@@ -2100,12 +2212,14 @@
             
             if (pendingTotal) pendingTotal.textContent = `${pendingAmount} ₽`;
             
+            // Данные пользователя
             const userName = app.getElement('user-full-name');
             const userPosition = app.getElement('user-position');
             const userRate = app.getElement('user-rate');
             const userEmail = app.getElement('user-email');
             
             if (userName) {
+                // Форматируем имя для отображения: Фамилия Имя
                 if (user.lastName && user.firstName) {
                     userName.textContent = `${user.lastName} ${user.firstName}`;
                 } else {
@@ -2146,6 +2260,7 @@
             const rate = user.rate || 0;
             
             try {
+                // Получаем смены за период
                 const shifts = await db.collection('shifts')
                     .where('userId', '==', userId)
                     .where('date', '>=', fromDate)
@@ -2159,6 +2274,7 @@
                 
                 shifts.forEach(doc => {
                     const data = doc.data();
+                    // Считаем только отработанные и неоплаченные
                     if (data.done && !data.paid) {
                         if (data.type === 'regular') {
                             regularCount++;
@@ -2168,6 +2284,7 @@
                             totalAmount += rate + 100;
                         }
                         
+                        // Помечаем как оплаченные
                         batch.update(doc.ref, { 
                             paid: true,
                             paidAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -2180,8 +2297,10 @@
                     return;
                 }
                 
+                // Добавляем премию/удержание
                 const finalAmount = totalAmount + bonus - penalty;
                 
+                // Создаём запись о выплате
                 const paymentRef = db.collection('salary_payments').doc();
                 await paymentRef.set({
                     userId: userId,
@@ -2199,14 +2318,17 @@
                     adminId: currentUser.uid
                 });
                 
+                // Применяем обновления смен
                 await batch.commit();
                 
+                // Обновляем данные
                 await loadUsers();
                 if (userId === currentUser?.uid) {
                     updateUserStats();
-                    await loadPaymentHistory(userId);
+                    loadPaymentHistory(userId);
                 }
                 
+                // Очищаем поля
                 bonusAmount.value = '0';
                 penaltyAmount.value = '0';
                 bonusNote.value = '';
@@ -2232,12 +2354,13 @@
             }
         });
         
-        // === ИСТОРИЯ ВЫПЛАТ (ИСПРАВЛЕННАЯ) ===
+        // === ИСТОРИЯ ВЫПЛАТ ===
         async function loadPaymentHistory(userId) {
             try {
                 const snapshot = await db.collection('salary_payments')
                     .where('userId', '==', userId)
                     .orderBy('createdAt', 'desc')
+                    .limit(20)
                     .get();
                 
                 const container = app.getElement('payments-history');
@@ -2251,12 +2374,7 @@
                 let html = '';
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    const date = data.createdAt?.toDate ? 
-                        data.createdAt.toDate().toLocaleDateString('ru-RU', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                        }) : 'Дата неизвестна';
+                    const date = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleDateString() : 'Дата неизвестна';
                     
                     html += `
                         <tr>
@@ -2275,73 +2393,15 @@
                 container.innerHTML = html;
             } catch (error) {
                 console.error('Ошибка загрузки истории выплат:', error);
-                
-                // Если ошибка индекса, пробуем без сортировки
-                if (error.message.includes('index')) {
-                    try {
-                        const snapshot = await db.collection('salary_payments')
-                            .where('userId', '==', userId)
-                            .get();
-                        
-                        const container = app.getElement('payments-history');
-                        if (!container) return;
-                        
-                        if (snapshot.empty) {
-                            container.innerHTML = '<tr><td colspan="9">Нет выплат</td></tr>';
-                            return;
-                        }
-                        
-                        let payments = [];
-                        snapshot.forEach(doc => {
-                            payments.push({ id: doc.id, ...doc.data() });
-                        });
-                        
-                        // Сортируем вручную
-                        payments.sort((a, b) => {
-                            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0);
-                            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0);
-                            return dateB - dateA;
-                        });
-                        
-                        let html = '';
-                        payments.forEach(data => {
-                            const date = data.createdAt?.toDate ? 
-                                data.createdAt.toDate().toLocaleDateString('ru-RU', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric'
-                                }) : 'Дата неизвестна';
-                            
-                            html += `
-                                <tr>
-                                    <td>${date}</td>
-                                    <td>${data.periodFrom}<br>${data.periodTo}</td>
-                                    <td>${data.regularShifts || 0}</td>
-                                    <td>${data.extraShifts || 0}</td>
-                                    <td>${data.baseAmount || 0} ₽</td>
-                                    <td>${data.bonus || 0} ₽</td>
-                                    <td>${data.penalty || 0} ₽</td>
-                                    <td>${data.bonusNote || ''}</td>
-                                    <td><strong>${data.totalAmount || 0} ₽</strong></td>
-                                </tr>
-                            `;
-                        });
-                        container.innerHTML = html;
-                    } catch (innerError) {
-                        console.error('Вторичная ошибка загрузки истории выплат:', innerError);
-                        const container = app.getElement('payments-history');
-                        if (container) {
-                            container.innerHTML = `<tr><td colspan="9">Ошибка загрузки истории выплат. Создайте индекс в Firebase Console.</td></tr>`;
-                        }
-                    }
-                }
             }
         }
         
         // === ИНИЦИАЛИЗАЦИЯ ===
         function init() {
+            // Табы
             initTabs();
             
+            // Навигация
             app.safeAddEventListener('nav-home', 'click', (e) => {
                 e.preventDefault();
                 app.showSection('welcome-section');
@@ -2362,11 +2422,13 @@
                 auth.signOut();
             });
             
+            // Кнопка "Вход в систему" на главной
             app.safeAddEventListener('go-to-login', 'click', (e) => {
                 e.preventDefault();
                 app.showSection('login-section');
             });
             
+            // Управление календарем админа
             const monthSelect = app.getElement('selected-month');
             const yearInput = app.getElement('selected-year');
             
@@ -2387,6 +2449,18 @@
                 });
             }
             
+            // Управление календарем пользователя
+            const userMonthSelect = app.getElement('user-selected-month');
+            const userYearInput = app.getElement('user-selected-year');
+            
+            if (userMonthSelect) {
+                userMonthSelect.value = currentMonth;
+            }
+            if (userYearInput) {
+                userYearInput.value = currentYear;
+            }
+            
+            // Начальные даты для периода
             const today = new Date();
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
             const periodFrom = app.getElement('period-from');
@@ -2395,35 +2469,17 @@
             if (periodFrom) periodFrom.valueAsDate = firstDay;
             if (periodTo) periodTo.valueAsDate = today;
             
+            // Начальная дата для постов (сегодня)
             const postsDate = app.getElement('posts-date');
             const userPostsDate = app.getElement('user-posts-date');
             if (postsDate) postsDate.valueAsDate = today;
             if (userPostsDate) userPostsDate.valueAsDate = today;
             
+            // Загружаем шаблон постов
             renderPostsTemplate();
             
+            // Начальная секция
             app.showSection('welcome-section');
-        }
-        
-        // === ЗАГРУЗКА СМЕН ДЛЯ ПОЛЬЗОВАТЕЛЯ ===
-        async function loadShiftsForUser(userId) {
-            try {
-                const snapshot = await db.collection('shifts')
-                    .where('userId', '==', userId)
-                    .get();
-                
-                shiftsMap[userId] = {};
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    shiftsMap[userId][data.date] = {
-                        type: data.type,
-                        done: data.done || false,
-                        paid: data.paid || false
-                    };
-                });
-            } catch (error) {
-                console.error('Ошибка загрузки смен:', error);
-            }
         }
         
         // === ОБРАБОТЧИК АУТЕНТИФИКАЦИИ ===
@@ -2438,12 +2494,13 @@
                 
                 if (isAdmin) {
                     app.showSection('admin-section');
+                    // Загружаем смены для админа
                     await loadAllShiftsForAdmin();
                 } else {
-                    await loadShiftsForUser(user.uid);
+                    // Загружаем смены для пользователя и обновляем календарь
+                    await loadUserShiftsForMonth();
                     updateUserStats();
-                    renderUserCalendar();
-                    await loadPaymentHistory(user.uid);
+                    loadPaymentHistory(user.uid);
                     app.showSection('user-section');
                 }
                 

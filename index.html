@@ -1061,26 +1061,32 @@ if (navLogout) navLogout.classList.toggle('hidden', !isLoggedIn);
         }
         
         async function addNewPostRow(date = null) {
-            if (!date) {
-                const today = new Date();
-                date = today.toISOString().split('T')[0];
-            }
-            
-            try {
-                const postRef = await db.collection('posts').add({
-                    date: date,
-                    post: '',
-                    guardId: '',
-                    guardName: '',
-                    time: '08:00',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                await loadPosts(); // Перезагружаем таблицу
-            } catch (error) {
-                alert('Ошибка создания поста: ' + error.message);
-            }
-        }
+    if (!date) {
+        const today = new Date();
+        date = today.toISOString().split('T')[0]; // Формат YYYY-MM-DD
+    }
+    
+    // Если date - это объект события (клик), берем сегодняшнюю дату
+    if (typeof date === 'object' && !(date instanceof String)) {
+        const today = new Date();
+        date = today.toISOString().split('T')[0];
+    }
+    
+    try {
+        const postRef = await db.collection('posts').add({
+            date: date,
+            post: '',
+            guardId: '',
+            guardName: '',
+            time: '08:00',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        await loadPosts(); // Перезагружаем таблицу
+    } catch (error) {
+        alert('Ошибка создания поста: ' + error.message);
+    }
+}
         
         async function savePost(row) {
             const postId = row.getAttribute('data-id');

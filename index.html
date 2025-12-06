@@ -175,30 +175,27 @@
             font-size: 0.85rem; 
         }
         
-        /* ТАБЛИЦА СМЕН АДМИНА */
-       .shifts-admin-table { 
-    width: auto !important; 
-    min-width: 100%;
-    border-collapse: collapse; 
-    margin-top: 1rem; 
-    font-size: 0.9rem;
-    background: #0a192f;
-    border-radius: 8px;
-    overflow: hidden;
-    table-layout: auto;
-}
+        /* ТАБЛИЦА СМЕН АДМИНА - ИСПРАВЛЕНА */
+        .shifts-admin-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 1rem; 
+            font-size: 0.9rem;
+            background: #0a192f;
+            border-radius: 8px;
+            overflow: hidden;
+            table-layout: auto;
+            min-width: 1000px;
+        }
         .shifts-admin-table th, 
-.shifts-admin-table td { 
-    padding: 0.8rem 0.5rem; 
-    text-align: center; 
-    border: 1px solid #233554; 
-    min-width: 45px;
-    max-width: 55px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: 50px;
-    vertical-align: middle;
-}
+        .shifts-admin-table td { 
+            padding: 0.5rem; 
+            text-align: center; 
+            border: 1px solid #233554; 
+            min-width: 45px;
+            height: 50px;
+            vertical-align: middle;
+            box-sizing: border-box;
         }
         .shifts-admin-table th { 
             background: #112240; 
@@ -208,42 +205,67 @@
             top: 0;
             z-index: 10;
         }
-        .shifts-admin-table th:first-child,
-        .shifts-admin-table td:first-child {
+        .shifts-admin-table th:first-child {
             min-width: 50px;
-            max-width: 60px;
             position: sticky;
             left: 0;
-            z-index: 5;
+            z-index: 15;
             background: #112240;
         }
-        .shifts-admin-table th:nth-child(2),
-.shifts-admin-table td:nth-child(2) {
-    min-width: 200px;
-    max-width: 200px;
-    width: 200px;
-    position: sticky;
-    left: 50px;
-    z-index: 5;
-    background: #112240;
-    height: 50px;
-    line-height: 5
+        .shifts-admin-table td:first-child {
+            min-width: 50px;
+            position: sticky;
+            left: 0;
+            z-index: 14;
+            background: #0a192f;
+            font-weight: bold;
+            color: #64ffda;
+        }
+        .shifts-admin-table th:nth-child(2) {
+            min-width: 200px;
+            max-width: 200px;
+            width: 200px;
+            position: sticky;
+            left: 50px;
+            z-index: 15;
+            background: #112240;
+        }
+        .shifts-admin-table td:nth-child(2) {
+            min-width: 200px;
+            max-width: 200px;
+            width: 200px;
+            position: sticky;
+            left: 50px;
+            z-index: 14;
+            background: #0a192f;
+            text-align: left;
+            padding-left: 15px;
+        }
         .shifts-admin-table tr:nth-child(even) {
             background: rgba(17, 34, 64, 0.5);
+        }
+        .shifts-admin-table tr:nth-child(even) td:first-child,
+        .shifts-admin-table tr:nth-child(even) td:nth-child(2) {
+            background: rgba(17, 34, 64, 0.8);
         }
         .shifts-admin-table tr:hover {
             background: rgba(100, 255, 218, 0.05);
         }
-       .shifts-cell { 
-    min-width: 40px; 
-    height: 50px; 
-    cursor: pointer; 
-    border-radius: 4px;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .shifts-admin-table tr:hover td:first-child,
+        .shifts-admin-table tr:hover td:nth-child(2) {
+            background: rgba(100, 255, 218, 0.08);
+        }
+        .shifts-cell { 
+            min-width: 40px; 
+            height: 40px; 
+            cursor: pointer; 
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
         .shifts-cell:hover { 
             transform: scale(1.1); 
             box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
@@ -307,15 +329,24 @@
             color: #e6f1ff;
             border: 1px solid #233554;
         }
-.table-responsive { 
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    border-radius: 8px;
-    border: 1px solid #233554;
-    max-width: 100%;
-    display: block;
-    width: 100%;
+        .table-responsive { 
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            border: 1px solid #233554;
+            max-width: 100%;
+            display: block;
+        }
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #0a192f;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #64ffda;
+            border-radius: 4px;
         }
         
         /* POSTS MANAGEMENT */
@@ -490,21 +521,7 @@
             font-size: 0.9rem; 
             background: #0a192f;
         }
-        * ДОБАВЬ ЭТОТ КОД ПЕРЕД /* MOBILE */ */
-/* Исправление для мобильных браузеров */
-.shifts-admin-table {
-    -webkit-overflow-scrolling: touch;
-}
-.table-responsive::-webkit-scrollbar {
-    height: 8px;
-}
-.table-responsive::-webkit-scrollbar-track {
-    background: #0a192f;
-}
-.table-responsive::-webkit-scrollbar-thumb {
-    background: #64ffda;
-    border-radius: 4px;
-}
+        
         /* MOBILE */
         @media (max-width: 768px) {
             header { flex-direction: column; gap: 1rem; padding: 1rem; }
@@ -523,18 +540,19 @@
             .calendar-header { padding: 0.6rem; font-size: 0.8rem; }
             .shift-marker { height: 10px; }
             .shifts-admin-table th:first-child,
-.shifts-admin-table td:first-child {
-    position: sticky !important;
-    left: 0 !important;
-}
-.shifts-admin-table th:nth-child(2),
-.shifts-admin-table td:nth-child(2) {
-    position: sticky !important;
-    left: 50px !important;
-}
-.table-responsive {
-    overflow-x: auto !important;
-}
+            .shifts-admin-table td:first-child {
+                position: sticky !important;
+                left: 0 !important;
+            }
+            .shifts-admin-table th:nth-child(2),
+            .shifts-admin-table td:nth-child(2) {
+                position: sticky !important;
+                left: 50px !important;
+            }
+            .table-responsive {
+                overflow-x: auto !important;
+            }
+        }
         
         @media (max-width: 480px) {
             .calendar-day { min-height: 60px; }
@@ -1276,8 +1294,8 @@
             let tableHtml = '';
             guards.forEach((guard, index) => {
                 tableHtml += `<tr data-user-id="${guard.id}">`;
-                tableHtml += `<td style="font-weight: bold; color: #64ffda;">${index + 1}</td>`;
-                tableHtml += `<td style="text-align: left; padding-left: 15px;"><strong>${guard.displayName}</strong><br><small style="color: #8892b0;">${guard.rate || 0} ₽</small></td>`;
+                tableHtml += `<td>${index + 1}</td>`;
+                tableHtml += `<td><strong>${guard.displayName}</strong><br><small style="color: #8892b0;">${guard.rate || 0} ₽</small></td>`;
                 
                 // Ячейки дней
                 for (let day = 1; day <= daysInMonth; day++) {
@@ -1320,15 +1338,16 @@
                     }
                     
                     tableHtml += `
-                        <td class="shifts-cell ${shiftClass}" 
-                            data-user-id="${guard.id}" 
-                            data-date="${dateStr}"
-                            data-shift-type="${shift ? shift.type : ''}"
-                            data-done="${shift ? shift.done : false}"
-                            data-paid="${shift ? shift.paid : false}"
-                            title="${title}"
-                            style="position: relative;">
-                            ${shift ? '' : '+'}
+                        <td>
+                            <div class="shifts-cell ${shiftClass}" 
+                                data-user-id="${guard.id}" 
+                                data-date="${dateStr}"
+                                data-shift-type="${shift ? shift.type : ''}"
+                                data-done="${shift ? shift.done : false}"
+                                data-paid="${shift ? shift.paid : false}"
+                                title="${title}">
+                                ${shift ? '' : '+'}
+                            </div>
                         </td>`;
                 }
                 
@@ -1340,6 +1359,7 @@
             // Добавляем обработчики кликов на ячейки
             tableBody.querySelectorAll('.shifts-cell').forEach(cell => {
                 cell.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     handleShiftCellClick(this);
                 });
             });

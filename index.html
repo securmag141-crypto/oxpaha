@@ -1630,8 +1630,8 @@
             });
         });
         
-        // === КАЛЕНДАРЬ ПОЛЬЗОВАТЕЛЯ ===
-    async function loadUserAllShiftsOnLogin() {
+// === КАЛЕНДАРЬ ПОЛЬЗОВАТЕЛЯ ===
+async function loadUserAllShiftsOnLogin() {
     if (!currentUser) return;
     try {
         // Загружаем смены на 3 месяца: прошлый, текущий, следующий
@@ -1665,7 +1665,8 @@
         console.error('Ошибка загрузки всех смен:', error);
     }
 }
-    async function loadUserShiftsForMonth() {
+
+async function loadUserShiftsForMonth() {
     if (!currentUser) return;
     try {
         const month = parseInt(app.getElement('user-selected-month')?.value || userViewMonth);

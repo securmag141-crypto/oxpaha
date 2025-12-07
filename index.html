@@ -3108,7 +3108,10 @@
                         password
                     });
     
-                    if (error) alert('Ошибка: ' + error.message);
+                    if (error) {
+                        console.error('Ошибка входа:', error);
+                        alert('Ошибка: ' + error.message + '\nКод: ' + error.code);
+                    }
                     else {
                         currentUser = data.user;
                         await checkUserRole();

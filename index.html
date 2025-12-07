@@ -3096,6 +3096,14 @@
         
         // === ЗАПУСК ===
         document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.getElementById('login-btn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    alert('Кнопка работает!');
+                });
+            }
+        });
     </script>
 </body>
 </html>

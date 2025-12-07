@@ -1190,22 +1190,33 @@
         }
         
         // === АУТЕНТИФИКАЦИЯ ===
-        app.safeAddEventListener('login-btn', 'click', async () => {
-            const email = app.getElement('login-email')?.value;
-            const password = app.getElement('login-password')?.value;
-            if (!email || !password) return alert('Введите email и пароль');
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password
+        // Добавляем обработчик напрямую
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.getElementById('login-btn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', async function() {
+                    const email = document.getElementById('login-email')?.value;
+                    const password = document.getElementById('login-password')?.value;
+            
+                    if (!email || !password) {
+                        alert('Введите email и пароль');
+                        return;
+                    }
+            
+                    try {
+                        const { data, error } = await supabase.auth.signInWithPassword({
+                            email,
+                            password
+                        });
+                        
+                        if (error) throw error;
+                        currentUser = data.user;
+                        await checkUserRole();
+                
+                    } catch (error) {
+                        alert('Ошибка: ' + error.message);
+                    }
                 });
-                
-                if (error) throw error;
-                currentUser = data.user;
-                await checkUserRole();
-                
-            } catch (error) {
-                alert('Ошибка: ' + error.message);
             }
         });
         
